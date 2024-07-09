@@ -19,6 +19,22 @@
 1mB = 1024 KB
 1 GB = 1024 mB
 
+1 Char=8 bits=1 byte {-128 to 127} {-2^7+1 to 2^7}
+
+Type Name | 32–bit Size | 64–bit Size
+:-- | :--: | :--
+char | 1 byte | 1 byte
+short | 2 byte | 2 byte
+int | 4 byte | 4 byte
+long | 4 byte | 8 byte
+
+
+
+
+
+
+
+
 
 1 Million/ Day = 12 Sec
 10 Million/ Day = 120 Sec

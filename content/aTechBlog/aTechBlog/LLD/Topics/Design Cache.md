@@ -18,7 +18,7 @@ search in O(1)
 save in O(1)
 
 **What data structure and algo we can use**
-doubly linked list + Hashmap and use evicition policy as LRU
+doubly linked list + Hashmap and use evicition policy as LRU. that is also an  Linked Hash Map
 ![[cache-dig|4000]]
 > call for get(3)
 	    then tail will contain 3, as tail is keeping the least recently used
@@ -164,11 +164,23 @@ psvm(){
 	 cache.get(key);
 }
 
+```
 
 
 
 
+## Cache with LFU eviction policy
+
+**Using Min Heap**
+![[Screenshot 2024-07-05 at 12.55.53 PM.png]]
+
+Although the identification of the element to be evicted is quick, but in order for the heap to maintain its property - element with lowest access frequency be at the top - it demands a rebalance, and this rebalancing process has a running complexity of `O(log n)`. To make things worse, rebalancing is required every single time the frequency of an item is changed; which means that in the cache that implements LFU, every time an item is either inserted, accessed or evicted, a rebalance is required - making all the three core operations to have the time complexity of `O(log n)`.
 
 
 
+**Using DoublylinkedList**
 
+![[Screenshot 2024-07-05 at 1.01.04 PM.png]]
+
+
+https://www.enjoyalgorithms.com/blog/least-frequently-used-cache
