@@ -94,7 +94,23 @@ how many unique char length url we would need to generate and its combination?
 8 ? 10? 12?
 in  5 years: 500M * 12 * 5 = 30B record
 
-We can compute a unique hash (e.g., [MD5] or [SHA256], etc.) of the given URL.
+how We can compute a unique hash (e.g., [MD5] or [SHA256], etc.) of the given URL?
+
+**Character Set:**
+
+- The alphanumeric set typically includes 62 characters:
+    - 10 digits (0-9)
+    - 26 uppercase letters (A-Z)
+    - 26 lowercase letters (a-z)
+
+- **Calculate 62^8 **
+
+62^8 = 62×62×62×62×62×62×62×62 = 218,340,105,584,896
+
+if we consider + and - symbol as well
+total will be 64 char
+total combination can be: 64^8
+
 
 
 
