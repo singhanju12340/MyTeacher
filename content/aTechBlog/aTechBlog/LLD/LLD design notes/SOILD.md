@@ -129,6 +129,59 @@ class AreaCalculator
  **Liskov substitution principle**
 Let q(x) be a property provable about objects of x of type T. Then q(y) should be provable for objects y of type S where S is a subtype of T.
 
+if class A is a subtype of class B, you should be able to replace B with A without breaking the behavior of your program
+```
+```java
+interface Bike {
+    void turnOnEngine();
+
+    void accelerate();
+}
+```
+
+
+```
+```java
+class Motorbike implements Bike {
+
+    boolean isEngineOn;
+    int speed;
+
+    @Override
+    public void turnOnEngine() {
+        isEngineOn = true;
+    }
+
+    @Override
+    public void accelerate() {
+        speed += 5;
+    }
+}
+```
+
+```java
+class Bicycle implements Bike {
+
+    boolean isEngineOn;
+    int speed;
+
+    @Override
+    public void turnOnEngine() {
+        throw new AssertionError("There is no engine!");
+    }
+
+    @Override
+    public void accelerate() {
+        speed += 5;
+    }
+}
+```
+
+`Bicycle` class throws an `AssertionError` in the `turnOnEngine()` method because it has no engine. This means that an instance of `Bicycle` cannot be substituted for an instance of `Bike` without breaking the behavior of the program.
+The `Bicycle` class is considered a subtype of the `Bike` interface, then according to the LSP, any instance of `Bike` should be replaceable with an instance of `Bicycle`
+But in this case, it's not true because `Bicycle` throws an `AssertionError` while trying to turn on the engine. Therefore, the code violates the LSP.
+
+
 **Interface segregation principle**
 A client should never be forced to implement an interface that it doesn’t use, or clients shouldn’t be forced to depend on methods they do not use.
 ```
@@ -179,6 +232,10 @@ class Square implements ShapeInterface
 
 **Dependency inversion principle states:**
 
-Entities must depend on abstractions, not on concretions. It states that the high-level module must not depend on the low-level module, but they should depend on abstractions.
+The Dependency Inversion Principle (DIP) states that **high-level modules should not depend on low-level modules, but both should depend on abstractions**. Abstractions should not depend on details – details should depend on abstractions.
+
+For example, consider a scenario where you have a class that needs to use an instance of another class. In the traditional approach, the first class would directly create an instance of the second class, leading to a tight coupling between them. This makes it difficult to change the implementation of the second class or to test the first class independently.
+
+But if you apply the DIP, the first class would depend on an abstraction of the second class instead of the implementation. This would make it possible to easily change the implementation and test the first class independently.
 
 https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
