@@ -1,0 +1,1 @@
+does 2 partition of same sum exist in an array
