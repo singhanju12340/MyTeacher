@@ -1,8 +1,8 @@
-S - Single Responsibility Principle
-O - Open closed principle
-L - Liskov substitution principle
-I - Interface segregation principle
-D - Dependency Inversion principle
+**S** - Single Responsibility Principle
+**O** - Open closed principle
+**L** - Liskov substitution principle
+**I** - Interface Segregation principle
+**D** - Dependency Inversion principle
 
 **Single Responsibility Principle**
 A class should have one and only one reason to change, meaning that a class should have only one job.

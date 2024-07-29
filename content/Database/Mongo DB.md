@@ -3,5 +3,10 @@ When you create a collection in Mongo, a primary key _id representing the docume
 
 when data is stored as document we have an advantage of space locality while querying complete set of data.
 
+1. Indexing
+2. Data storage patterns
+3. Data types supported
+
+
 
 

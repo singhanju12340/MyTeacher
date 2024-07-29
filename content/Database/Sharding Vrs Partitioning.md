@@ -77,9 +77,11 @@ Database sharding and database partitioning are techniques used to distribute da
 - Potential complexity in partition management and maintenance.
 - Requires careful design of the partition key to ensure even data distribution.
 
+**Type of partitioning:**
 
+1. Horizontal
+2. Vertical
 ### Comparison Table:
-
 
 | Feature | Database Sharding | Database Partitioning |
 | --- | --- | --- |
@@ -93,7 +95,8 @@ Database sharding and database partitioning are techniques used to distribute da
 |Advantages|Performance, scalability, fault tolerance|Query performance, maintenance, manageability|
 |Disadvantages|Complexity, shard key design, query routing|Limited scalability, partition management complexity|
 
-
-
 - **Sharding** is best suited for large-scale applications requiring horizontal scalability and high throughput by distributing data across multiple servers.
 - **Partitioning** is ideal
+- 
+- ![[Screenshot 2024-07-29 at 4.14.44 PM.png]]
+- ![[Screenshot 2024-07-29 at 4.12.38 PM.png]]
