@@ -5,6 +5,8 @@ Indexes can be implemented using [balanced trees](https://en.wikipedia.org/wiki
 Primary Index
 Fussy Index
 reversed index
+GSI
+LSI
 
 ```plantuml
 @startuml

@@ -4,7 +4,7 @@
 **I** - Interface Segregation principle
 **D** - Dependency Inversion principle
 
-**Single Responsibility Principle**
+### Single Responsibility Principle
 A class should have one and only one reason to change, meaning that a class should have only one job.
 ```
 class Square
@@ -39,7 +39,7 @@ class AreaCalculator
 
 
 
-**Open closed principle**
+### Open closed principle
 Objects or entities should be open for extension but closed for modification. This means that a class should be extendable without modifying the class itself.
 
 above AreaCalculator  is calculating area for both square and circle. if new shape  need to be added, existing AreaCalculator class needs to be modified. better add sum method in each shape class itself. 
@@ -126,7 +126,7 @@ class AreaCalculator
 ```
 ```
 
- **Liskov substitution principle**
+ ### Liskov substitution principle
 Let q(x) be a property provable about objects of x of type T. Then q(y) should be provable for objects y of type S where S is a subtype of T.
 
 if class A is a subtype of class B, you should be able to replace B with A without breaking the behavior of your program
@@ -182,7 +182,7 @@ The `Bicycle` class is considered a subtype of the `Bike` interface, then ac
 But in this case, it's not true because `Bicycle` throws an `AssertionError` while trying to turn on the engine. Therefore, the code violates the LSP.
 
 
-**Interface segregation principle**
+### Interface segregation principle
 A client should never be forced to implement an interface that it doesn’t use, or clients shouldn’t be forced to depend on methods they do not use.
 ```
 interface ShapeInterface
@@ -230,7 +230,7 @@ class Square implements ShapeInterface
 }
 ```
 
-**Dependency inversion principle states:**
+### Dependency inversion principle states:
 
 The Dependency Inversion Principle (DIP) states that **high-level modules should not depend on low-level modules, but both should depend on abstractions**. Abstractions should not depend on details – details should depend on abstractions.
 
