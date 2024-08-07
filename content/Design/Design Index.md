@@ -21,3 +21,4 @@
 21. [[Video Processing Pipeline]]
 22. [[Design load balancer]]
 23. [[Airline ticket systems]]
+24. [[Stock trading]]
