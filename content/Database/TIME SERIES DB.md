@@ -1,3 +1,9 @@
+---
+Creation Time :
+Modified Time :
+Creation Time: Monday, July 15th 2024, 6:34:28 pm
+Modified Time: Thursday, August 8th 2024, 3:50:38 pm
+---
 InfluxDB, Prometheus DB, TimeScaleDB, Timestream
 
 
@@ -12,7 +18,7 @@ InfluxDB, Prometheus DB, TimeScaleDB, Timestream
 6. **_Analytics and Trend Analysis_**: TSDBs typically support functions that allow you to do sophisticated trend analysis and forecasting on your time-series data.
 7. **_Anomaly Detection_**: Timeseries databases can help identify outliers or anomalies in your data, which can be critical for fields like fraud detection, system health monitoring, and predictive maintenance.
 
-##  Components of a TSDB
+## Components of a TSDB
 
 1. **_Data Ingestion Layer_**: This is responsible for accepting incoming data streams. It may be designed to handle large volumes of data at high velocity.
 2. **_Storage Engine_**: The heart of the TSDB, this component is responsible for storing the time-series data. It is optimized to handle time-series data efficiently, usually employing specific compression algorithms to reduce the amount of storage needed and to increase query speed.

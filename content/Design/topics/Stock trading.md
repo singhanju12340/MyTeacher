@@ -81,3 +81,30 @@ StockPriceHistory{
 
 
 [[stockExchange]]
+
+
+## Heigh throughput Exchange systems:
+exchange keeps tracks of bids and ask 
+ex:
+
+**Bids table:**
+
+| name  | amount | unit |
+| ----- | ------ | ---- |
+| kitty | $100   | 5    |
+| mity  | $90    | 10   |
+**Ask Table:**
+
+| name    | amount | quantity |
+| ------- | ------ | -------- |
+| citadel | $120   | 100      |
+| melvin  | $130   | 20       |
+bids will be success full when bidPrice>= askPrice
+
+**Matching Machine Service:**
+instead of TCP connection for publising latest pricing and order details, exchange uses UDP multicasting.
+
+
+
+
+

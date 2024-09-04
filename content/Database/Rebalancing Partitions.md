@@ -1,3 +1,7 @@
+---
+Creation Time: Wednesday, July 24th 2024
+Modified Time: Monday, August 12th 2024
+---
 •The query throughput increases, so you want to add more CPUs to handle the load. 
 • The dataset size increases, so you want to add more disks and RAM to store it. 
 • A machine fails, and other machines need to take over the failed machine’s responsibilities. All of these changes call for data and requests to be moved from one node to another.
@@ -21,5 +25,5 @@ This approach to rebalancing is used in Riak,  Elasticsearch, Couchbase , and Vo
 The best performance is achieved when the size of partitions is “just right,” neither too big nor too small, which can be hard to achieve if the number of partitions is fixed but the dataset size varies.
 
 3. **Dynamic partitioning**
-		key range–partitioned databases such as HBase and RethinkDB cre‐ ate partitions dynamically. When a partition grows to exceed a configured size (on HBase, the default is 10 GB), it is split into two partitions so that approximately half of the data ends up on each side of the split [26]. Conversely, if lots of data is deleted and a partition shrinks below some threshold, it can be merged with an adjacent par‐ tition. This process is similar to what happens at the top level of a B-tree
+		key range–partitioned databases such as HBase and RethinkDB cre‐ ate partitions dynamically. When a partition grows to exceed a configured size (on HBase, the default is 10 GB), it is split into two partitions so that approximately half of the data ends up on each side of the split. Conversely, if lots of data is deleted and a partition shrinks below some threshold, it can be merged with an adjacent par‐ tition. This process is similar to what happens at the top level of a B-tree
 		* Dynamic partitioning is not only suitable for key range–partitioned data, but can equally well be used with hash-partitioned data. MongoDB since version 2.4 supports both key-range and hash partitioning, and it splits partitions dynamically in either case.

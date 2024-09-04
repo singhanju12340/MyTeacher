@@ -100,3 +100,8 @@ Database sharding and database partitioning are techniques used to distribute da
 - 
 - ![[Screenshot 2024-07-29 at 4.14.44 PM.png]]
 - ![[Screenshot 2024-07-29 at 4.12.38 PM.png]]
+
+
+**Type of DB sharding strategies**
+
+![[Screenshot 2024-08-08 at 2.02.56 PM.png]]

@@ -1,3 +1,7 @@
+---
+Creation Time: Monday, July 29th 2024
+Modified Time: Monday, August 12th 2024
+---
 User table 
 
 | id  | name | age | bio     | total_blogs |

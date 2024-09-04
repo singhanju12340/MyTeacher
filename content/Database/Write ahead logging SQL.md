@@ -1,3 +1,9 @@
+---
+Creation Time :
+Modified Time :
+Creation Time: Monday, July 29th 2024, 5:35:14 pm
+Modified Time: Thursday, August 8th 2024, 4:34:01 pm
+---
 
 Write to log file before actually writing it in table storage and managing index changes.
 Flush from log to tables once a while, if crash happens log actions can be replayed
