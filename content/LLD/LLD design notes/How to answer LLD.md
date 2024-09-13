@@ -1,4 +1,11 @@
+---
+Creation Time: Thursday, July 11th 2024
+Modified Time: Thursday, September 12th 2024
+---
 **Low Level Design (LLD)** or **Object Oriented Design (OOD)** interview tests your ability to translate high-level requirements into detailed class structures, methods and their interactions using **object-oriented design principles**.
+
+
+Study of writing code to make application
 
 This article will guide you through a **step-by-step** approach to answer LLD interview questions effectively using an example problem: **Design Stack Overflow**.
 

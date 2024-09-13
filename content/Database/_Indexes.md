@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, August 8th 2024
-Modified Time: Monday, August 19th 2024
+Modified Time: Thursday, September 12th 2024
 ---
 
 1. Indexing
@@ -20,9 +20,9 @@ Modified Time: Monday, August 19th 2024
 		2. [[Service Discovery after rebalancing| Service Discovery]]
 	3. Transactions in Database:
 		1. [[ACID]]
-		2. Isolation Levels
+		2.[[Isolation Level | Isolation Level]] 
 			1. Read Commited
-			2. Dirty read
+			2. Dirty read: 
 			3. Dirty write
 	4. Replication
 	5. Maintaining Consistency
