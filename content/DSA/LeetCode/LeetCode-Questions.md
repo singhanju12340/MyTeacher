@@ -1,20 +1,26 @@
 ---
 Creation Time: Monday, June 24th 2024
-Modified Time: Tuesday, August 13th 2024
+Modified Time: Wednesday, October 30th 2024
 ---
-1. [[_ArrayIndex | Arrays]]
-2. String
-3. Prefix Sum
-4. Queue
-5. Stack
+1.  [[_ArrayIndex | Arrays]]
+2. _**String
+3. _**2Pointer
+	1. [[Sort Colors]]
+4. _**Prefix Sum
+	1. [[Product of Array Except Self]]
+5. _**Queue
+6. _**Stack
 	1. 
-6. LinkedList
-7. Binary Tree
+7. _**LinkedList
+8. _**Binary Tree
 	BFS
 	DFS
-7. Graph
-8. Binary Search
-9. Recursion
+		[[Lowest Common Ancestor of a Binary Tree]]
+1. _**Graph
+	1. [[Course Schedule ,Topological sort BFS]]
+2. _**Binary Search
+	1. [[Search in Rotated Sorted Array]]
+3._**Recursion
 	1. [[recursion basic]]
 	2. [[recursion multi function call]]
 	3. [[recursion multi function call | Print number of subsequence with sum K]]
@@ -23,16 +29,17 @@ Modified Time: Tuesday, August 13th 2024
 	6. [[Combination Sum]]
 	7. [[Combination Sum 2]]
 	
-10. BackTracking
-11. DP
-	1. recursion
-	2. memorisation: top down
-	3. tabulation: botton up
-12. DP -1D
-13. DP-2D
-14. DP on subsequence and subsets
-15. DP on Stock
+10. _**BackTracking
+11. _**DP
+12. _**DP -1D
+13. _**DP-2D
+	1. [[DSA/questions/DP Subsequence or Subset/Partition Equal Subset Sum|Partition Equal Subset Sum]]
+14. _**DP on subsequence and subsets
+15. _**DP on Stock
 	[[121. Best Time to Buy and Sell Stock]]
-16. Bit Manipulation
-17. Trie
-18. Binary Search tree
+16. _**Bit Manipulation
+17. _**Trie
+18. _**Binary Search tree
+19. _**Matrix
+	1. [[Number of Islands]]
+	2. [[Rotting Orange]]

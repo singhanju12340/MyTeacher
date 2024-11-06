@@ -1,8 +1,46 @@
+---
+Creation Time: Thursday, July 25th 2024
+Modified Time: Monday, September 16th 2024
+---
+#### Functional requirement:  
+	1.  Upload a file/object in S3  
+	2.  Download a file object from S3 .  
+	3. Versioning of objects
+
+#### Non functional requirements :
+	1. Should be durable 6 nines  (never loose a file)
+	2. Should be highly available 4 nines  
+	3. Multitenency- same system available for multiple account
+	4. Scalable 
+	5. Fault tolerant
+
+#### Capacity estimation :
+	Assuming S3 has 100 PB of storage per year .
+	Average file size : 1mb
+	Total objects per year = 100*10^9/1 = 100 billion objects
+
+Bucket - Container at which multiple objects or files are stored  
+Object : Payload which stores inside the bucket . Every object contains its metadata ,uuid and payload
+
+#### RDBMS for metadata:
+Bucket
+
+| bucket_id | bucket_name | time_created |
+| --------- | ----------- | ------------ |
+Object
+
+| uuid | object_name | bucket_id | version | object_mapping | objectId | offset | filename | size |
+| ---- | ----------- | --------- | ------- | -------------- | -------- | ------ | -------- | ---- |
+
+Object mapping [This is used when we keep multiple objects under same file so to identify the object we use offset that where the object is being stored in file ]
+
+
+
 ![[Screenshot 2024-08-06 at 3.15.10 PM.png]]
 
 **we can start to draft a high-level design for our S3 system:**
 
-- For reading and writing objects to disk, we need to set up a **data service**.
+- For reading and writing objects to disk, we need to set up a **data service**/Placement service.
 - For reading and writing metadata for those objects, a **metadata service**.
 - For enabling users to interact with our system, an **API service**.
 - For handling user auth, **identity and access management** (IAM).
@@ -27,7 +65,7 @@
 **To upload an object...**
 1. With the bucket created, the client sends an HTTP PUT request to store an object in the bucket.
 2. Again, the API service calls IAM to perform authentication and authorization. We must check if the user has write permission on the bucket.
-3. After auth, the API service forwards the client's pay­load to the **data service**, which persists the payload as an object and returns its id to the API service.
+3. After auth, the API service forwards the client's pay­load to the **data service**, which persists the payload as an object and returns its id to the API service. It generates the uuid of the object and figure out which data node need to store the object . Data service keeps the mapping of data node and its health and its keep virtual cluster map .Virtual cluster map keeps info of each data node and its replicas . Data service uses consistent hashing for storing and retrieving the data node .
 4. The API service next calls the **metadata service** to insert a new row in a dedicated objects table in the metadata database. This row holds the object id, its name, and its bucket_id, among other details.
 5. The API service returns a success message to the client.
 ![[Screenshot 2024-08-06 at 4.12.55 PM.png]]
@@ -37,6 +75,8 @@
 Let's keep drilling down. How exactly do we write to a storage node?
 To make the most out of our disk, we can write multiple small objects into a larger file, commonly known as a write-ahead log (WAL).
 That is, we append each object to a running read-write log. When this log reaches a threshold (e.g. 2 GiB), the file is marked as read-only ("closed"), and a new read-write log is created to receive subsequent writes. This compact storage process is what accounts for S3 objects being immutable.
+
+
 
 
 Typically, S3 systems cap the number of buckets allowed per user, so the size of our buckets table will remain bounded. If each user has set up 20 buckets and each row takes up 1 KiB, then one million users will require ~20 GiB. This can easily fit in a single database instance, but we may still want to consider provisioning read replicas, for redundancy and to prevent a bandwidth bottleneck.

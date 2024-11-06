@@ -1,4 +1,8 @@
-In memory open source cache
+---
+Creation Time: Monday, July 29th 2024
+Modified Time: Tuesday, October 29th 2024
+---
+In memory, Single threaded open source cache written in 'C'.
 
 **Data structure:**
 Hash, List, Set, sorted set, bitmap, hyperlog log, geospatial index, streams 
@@ -8,6 +12,12 @@ Gaming leaderboard
 message buffer
 auth session store
 realtime analytics
+
+
+_How much data redis single node can store: 
+- **Available Physical Memory (RAM)** on the server where Redis is running.
+- **Redis Internal Data Structure Overheads**, which vary depending on the data types and structures used.
+-**For most 64-bit systems**, Redis can address up to **4 terabytes (TB)** of RAM, as long as the system itself supports that much physical memory.
 
 ## Advantages:
 #### Single Command on Redis is atomic: 
@@ -39,3 +49,11 @@ Redis takes advantage of read system calls and listen to only TCP socket connect
 
 Also Redis perform in memory operations too quick because redis keeps data in memory, with the single thread redis is able to perform quick action using advantage of in memeory and read only when data available feature
 
+
+
+## Capabilities and Uses cases of Redis
+### Redis as a Cache
+### Redis as a Distributed Lock
+### Redis for Leaderboards
+### Redis for Rate Limiting
+### Redis for Proximity Search

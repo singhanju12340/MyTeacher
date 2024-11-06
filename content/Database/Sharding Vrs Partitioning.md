@@ -1,3 +1,7 @@
+---
+Creation Time: Monday, July 29th 2024
+Modified Time: Friday, September 20th 2024
+---
 
 Database sharding and database partitioning are techniques used to distribute data across multiple databases or tables to improve performance, scalability, and manageability. While they share similarities, they have distinct differences and use cases. Here's a detailed comparison.
 

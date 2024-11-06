@@ -18,7 +18,7 @@ Modified Time: Monday, August 12th 2024
 	2. [[Google Calander]]
 4. Storage
 	4. [[CDN Akamai]]
-	5. [[Storage like s3]]
+	5. [[Distributed Storage like s3]]
 5. Enteirnment
 	1. [[Instagram]]
 	2. [[Netflix]]

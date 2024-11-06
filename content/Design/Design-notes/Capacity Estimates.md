@@ -1,3 +1,7 @@
+---
+Creation Time: Thursday, July 4th 2024
+Modified Time: Tuesday, October 29th 2024
+---
 2^2 = 4
 2^3 = 8
 2^4 = 16
@@ -7,6 +11,11 @@
 2^11=2048
 2^8= 256
 2^9=512
+2^30=1,073,741,824 =**1 billion, 73 million, 741 thousand, 824**.   **1 gigabyte (GB)** in computing terms, where 1 GB=2^30
+2^64 = 18,446,744,073,709,551,616 : **18 quintillion, 446 quadrillion, 744 trillion, 73 billion, 709 million, 551 thousand, 616**.
+2^32=4,294,967,296 = **4 billion, 294 million, 967 thousand, 296**.
+
+
 
 
 1 Million = 10^6
@@ -43,3 +52,10 @@ long | 4 byte | 8 byte
 
 **Always trying Rounding Off in power of 10 or 2**
 
+
+### Availability Estimates:
+#### 99.9% availability:
+**Total time in a year** = 365 days = 365 × 24 hours = **8,760 hours**
+**99.9% uptime** = 0.999 × 8,760 hours = **8,751.24 hours of uptime**
+**Allowable downtime** = 8,760 - 8,751.24 = **8.76 hours**
+Thus, **99.9% availability** allows for approximately **8 hours and 45 minutes of downtime per year**.
