@@ -1,3 +1,7 @@
+---
+Creation Time: Tuesday, July 2nd 2024
+Modified Time: Monday, January 6th 2025
+---
 
 Stock trading can work on publisher/observer patterns
 

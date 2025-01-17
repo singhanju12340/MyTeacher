@@ -1,8 +1,8 @@
 ---
 Creation Time :
 Modified Time :
-Creation Time: Monday, July 29th 2024, 5:35:14 pm
-Modified Time: Thursday, August 8th 2024, 4:34:01 pm
+Creation Time: Monday, July 29th 2024
+Modified Time: Monday, November 18th 2024
 ---
 
 Write to log file before actually writing it in table storage and managing index changes.

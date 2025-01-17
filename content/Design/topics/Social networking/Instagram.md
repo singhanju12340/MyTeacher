@@ -1,9 +1,39 @@
+---
+Creation Time: Wednesday, July 10th 2024
+Modified Time: Friday, December 6th 2024
+---
 **Functional Requirements**
+_User Management_: The user should be able to create and log in to an account.
 
-2. Users should be able to upload/download/view photos.
-3. Users can perform searches based on photo/video titles.
-4. Users can follow other users.
-5. The system should generate and display a user’s News Feed consisting of top photos from all the people the user follows.
+_User Activity_ 
+1. User should be able to  create, edit and delete a post, reel or status .
+2. User should be able to follow and allow to follow other users
+3. Allow user to like and comment on other friends post
+4. User should be able to view its profile and list of activities he has done
+5. User can search friends and post by title
+_Friends and Followers_ : 
+1. One user can follow multiple users
+2. User can accept follow request
+3. User can create close friend list and restricted the user to view post.
+_User Feed_ : 
+1. Provide feed with a list of friends activities user follows.
+2. Feed should be rendered based on user interests 
+
+
+**NFR:** 
+1. User Feed should be loaded with minimum latency 200 ms
+2. User should be able to post within miliseconds 
+3. System should be 99.99% available
+4. User post should not be lost and delete unless user deletes it
+
+
+
+
+
+6. Users should be able to upload/download/view photos.
+7. Users can perform searches based on photo/video titles.
+8. Users can follow other users.
+9. The system should generate and display a user’s News Feed consisting of top photos from all the people the user follows.
 
 **Non-functional Requirements**
 

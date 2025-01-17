@@ -59,3 +59,7 @@ long | 4 byte | 8 byte
 **99.9% uptime** = 0.999 × 8,760 hours = **8,751.24 hours of uptime**
 **Allowable downtime** = 8,760 - 8,751.24 = **8.76 hours**
 Thus, **99.9% availability** allows for approximately **8 hours and 45 minutes of downtime per year**.
+
+
+
+1000 MB * 1M = 1TB

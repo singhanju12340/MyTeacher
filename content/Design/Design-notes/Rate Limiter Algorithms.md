@@ -1,6 +1,6 @@
 ---
 Creation Time: Wednesday, July 17th 2024
-Modified Time: Tuesday, October 29th 2024
+Modified Time: Sunday, January 12th 2025
 ---
 
 ### 1. Token Bucket
@@ -109,7 +109,10 @@ _Disadvantages:
 - - Consider a user sending 1 request per second in a 1-minute window with a limit of 60 requests. They might hit the limit if they sent the 60th request exactly when the window resets, disrupting their experience.
 - - The window size must be large enough to accommodate most typical usage patterns, yet small enough to respond quickly to usage spikes.
 - _potential for throtlling_ : - A user may submit two requests(101, 102) 59 seconds into the current window, which will get rejected. If they then attempt the same just a second after the window resets, request will be success full, this will create dissatisfaction in user expericence.'
-- 
+
+_There are 2 places to add Rate limiter implementation:
+1. create separate API rate limiter service and deploy a full fledges rate limiter distributed service along with load balancer.
+2. Make rate limiter a library not a service, and use redis to update counter from service it self instead of calling. 
 
 ### Sliding Window Log
 

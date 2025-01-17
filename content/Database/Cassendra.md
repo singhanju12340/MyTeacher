@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, July 8th 2024
-Modified Time: Wednesday, October 9th 2024
+Modified Time: Monday, November 18th 2024
 ---
 
 Apache Cassandra is a highly scalable and distributed NoSQL database which can handle large amounts of data across multiple nodes and data centers.
@@ -12,16 +12,17 @@ Apache Cassandra is a highly scalable and distributed NoSQL database which can h
 ![[Screenshot 2024-07-08 at 6.13.55 PM.png]]
 
 
-Primary key of Cassendra is combination of partition key and clustering key
+Primary key of Cassandra is combination of partition key and clustering key
 Create table Player{
 	playerId,
 	name,
 	countryId
 	PRIMARY_KEY((countryId), playerId)
 }
+
 here countryId is partition key and playerId is an clustering key.
 
-*  Partitioner uses a consistent hashing algorithm to convert this key into tokens which is then used to determine where the data will reside on the ring(cluster of nodes). This is the reason why querying for data in Cassandra is super-efficient, because it knows where exactly the data is going to be *
+*  Partitioner uses a consistent hashing algorithm to convert this key into tokens which is then used to determine where the data will reside on the ring(cluster of nodes). This is the reason why querying for data in Cassandra is super-efficient, because it knows where exactly the data is going to be *.
 * Clustering key is the second part of primary key used to ensure uniqueness to primary key in order to avoid collision, and to sort the data inside a partition. In the above example, we can see that data is being sorted by player_id inside each partition.
 * 
 ![[Screenshot 2024-07-08 at 6.28.56 PM.png]]
@@ -56,7 +57,7 @@ _Any Cassandra node can service a query from the client application because all 
 
 *#**Storage Model**
 Cassandra uses LSM tree to achieve speed.  Cassandra opts for an approach that favors write speed over read speed. 
-
+Its a masterless peer to peer communicationcluster
 
 
 *_**Cassandra is best suited for chats applications like discord**
@@ -98,3 +99,12 @@ These enable Cassandra users to avoid excess denormalizing of data if there's qu
 
 ****Materialized Views**: Materialized views are a way for a user to configure Cassandra to materialize tables based off a source table.
 
+
+
+# Why write/read is fast?
+
+1. `Commit Log:` By writing to a commit log on the local node before the memtable, Cassandra ensures that writes are durable, even if the node crashes before the data is written to the memtable. This reduces the latency of write operations.
+2. `Asynchronous Writes:` Cassandra uses an asynchronous write model, meaning that write requests are acknowledged as soon as they are written to the commit log, rather than waiting for them to be written to the memtable or sstables. This allows for write operations to be acknowledged quickly, reducing the latency of write operations.
+3. `Compaction:` By compacting sstables, Cassandra reduces the amount of disk I/O required for write operations, further improving write performance.
+4. `Read via bloomfilter and memtable`
+5. 
