@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, July 29th 2024
-Modified Time: Tuesday, October 29th 2024
+Modified Time: Tuesday, January 21st 2025
 ---
 In memory, Single threaded open source cache written in 'C'.
 
@@ -57,3 +57,22 @@ Also Redis perform in memory operations too quick because redis keeps data in me
 ### Redis for Leaderboards
 ### Redis for Rate Limiting
 ### Redis for Proximity Search
+
+
+
+
+# Redis rs Memcache
+
+### Memcache
+1. uses consistent hasing to provide dynamic partitioning support
+2. Multithreaded
+3. Uses LRU eviction  can be archived by linkedHashMap and Hashmap
+4. Multileader/leader less
+5. More flexible less convinence
+
+### Redis
+1. Single threaded help in achieving ACID properties
+2. No variable  partitioning
+3. write ahead log, allows us to do atomic transactions
+4. Single leader application
+

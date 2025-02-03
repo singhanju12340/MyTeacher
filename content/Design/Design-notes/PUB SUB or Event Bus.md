@@ -1,13 +1,14 @@
 ---
 Creation Time: Monday, August 5th 2024
-Modified Time: Wednesday, October 9th 2024
+Modified Time: Monday, January 20th 2025
 ---
 
 Google pub sub
 Amazon SQS
 Rabit MQ
-Kafka
-Azure Bus service
+Kafka: data streamer
+Azure Bus service 
+Kinesis
 
 
 ## Kafka

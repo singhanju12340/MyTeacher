@@ -30,7 +30,7 @@ Modified Time: Thursday, September 12th 2024
 	4. 
 4. DB type
 	1. [[Elastic Search]]
-	2. [[Redis]]
+	2. [[Redis & MemCache]]
 	3. [[Mongo DB]]
 	4. [[TIME SERIES DB]]
 	5. [[HIVE key value Database]]

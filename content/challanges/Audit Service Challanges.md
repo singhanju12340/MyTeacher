@@ -1,11 +1,11 @@
 ---
 Creation Time: Thursday, September 12th 2024
-Modified Time: Friday, January 17th 2025
+Modified Time: Thursday, January 30th 2025
 ---
 1. Fetch all vins ingestion within 30 days
 2. Fetch Vin History for 30 days
 3. Fetch Detail of given txnId
-4. fetch All TxnId history for 1 dayfetch all vin with failed ingestion at any step with in 30 days
+4. fetch All TxnId history for 1 day fetch all vin with failed ingestion at any step with in 30 days
 
 
 
@@ -14,7 +14,7 @@ Capacity estimates:
  Total vins: 10 lakh = 1M
  Total Audit event: 1M * 10 = 10M
  Audit event size : 800 Byte
- Total Size of Audit data = 800 * 10M Byte = 8000M Byte
+ Total Size of Audit data = 800 * 10M Byte = 8000M Byte 
  Audit data Size per day: 8000M Byte = 8M KB = 8 * 10^6 KB = 8000MB ~ 8 GB
  Per month audit data= 240GB 
  >>> we were working on reducing event payload size by removing duplicate data and only keeping meta data, also not audting in case of replay. 
@@ -22,7 +22,7 @@ Capacity estimates:
 
 New Adhoc Capacity estimates:
  total vins: 30 lakh = 3M
- total event: 30*10 = 300 lakh = 30M 
+ total event: 30* 10 = 300 lakh = 30M 
 
 while resyncing and adding new inventory total events at audit service: 
 
@@ -473,3 +473,15 @@ AS SELECT
 FROM activity_events
 WHERE actor_type = 'USER';
 ```
+
+
+
+
+heigh write
+long trail
+
+
+events
+activities- analytices, 
+
+cassandra is costly than click house managed 
