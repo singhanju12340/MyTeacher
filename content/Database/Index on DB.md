@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, July 29th 2024
-Modified Time: Monday, August 12th 2024
+Modified Time: Tuesday, February 11th 2025
 ---
 User table 
 
@@ -116,3 +116,74 @@ Data is shared based on authorId. here partition key is present in query where c
 We can create LSI local secondary index, this index data will be stored on that particular shard which will store data on the node keeping data of that author. 
 
 instead of fanning out query on all the shard it will go to particular shard, fetch row detail from LSI and then fetch actual record.
+
+
+
+
+
+### Different type of index:
+
+##### Hash Index: 
+It is majorly used for caching database
+
+##### BTree: 
+B-tree indexes are the most common type of database index, providing an efficient way to organize data for fast searches and updates. They achieve this by maintaining a balanced tree structure that minimizes the number of disk reads needed to find any piece of data.
+It provides indexing on 1 D data. 
+![[Pasted image 20250211163458.png]]
+
+**Why to use B Tree:**
+1. It maintains data in sorted order, and optimise range queries.
+2. It is self balancing, new random addition and removal does well in terms of performance.
+3. It minimize disk IO by matching their structure with DB. i.e keeping index sorted and arrange in sequence
+
+
+##### Geospatial Index:
+2D data
+
+Ex: select * from location where lat> 100  and lat<400 and  long> 50  and long<200; 
+
+![[Pasted image 20250211172852.png]]
+
+result are created after merging pink and blue lat and long area using different type of algorithms.
+
+	Geo hasing Algorithm`
+Converts 2D cordinates into 1D numbers
+
+`Used in : Redis
+
+![[Pasted image 20250211173024.png]]
+
+This maps smaller area inside larger area with common prefixes. 
+
+Ex: state has code 2, district will be 21,22,23,24 then city inside district 22 will be 221,222,223,224
+
+	Quadtrees
+
+This also Split the word recursively into K dimension. If parent has more than K node, split it further 
+Difference from Geo Hashing is its not 1 dimensional number set. its a tree structure and expend child only when there is more density area present for parent node.
+![[Pasted image 20250211173735.png]]
+
+	R Tree
+
+
+##### Inverted index
+
+`used in elastic search, postgres full text search
+
+
+Strings are lexicographically sorted.  
+Inverted index are data structure  designed to optimise queries based on  prefix  search  or string matching in group of documents.
+
+Ex: Select * from document where name like '%fast%';
+
+Doc1: "B-tree are fast and reliable"
+doc2: "B-tree are fast but limited"
+doc3: "B tree handle range query faster"
+
+Inverted Index:
+B-tree - > {doc1, doc2, doc3}
+fast -> {doc1, doc2}
+
+###### Type of index and uses
+
+![[Pasted image 20250211174455.png]]

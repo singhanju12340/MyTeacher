@@ -89,7 +89,7 @@ structured, unstructured, geo and matrix data type as well
 4. We can easily scale to 100s of nodes in an automatic and painless ways
 5.  _Index size:_ Being able to manage huge indexes (in the order of hundreds of Gigabytes or Petabytes
 6. _Throughput:_ Being able to manage various amount of simultaneous searches under a certain response time
-7. JSON serialization is supported by various programming languages, and has become the standard format used by the NoSQL movement
+7. JSON serialisation is supported by various programming languages, and has become the standard format used by the NoSQL movement
 8. Auto suggestions: The completion suggester provides autocomplete/search-as-you-type functionality
 9. Schema free- when an object is indexed later with a new property, it will automatically be added to the mapping definitions
 10. we can use kafka connectors to populate different data sets into elastic search indexes

@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, August 5th 2024
-Modified Time: Monday, January 20th 2025
+Modified Time: Sunday, February 9th 2025
 ---
 
 Google pub sub
@@ -44,7 +44,7 @@ Ways to handle hot partition:
 1. **Random partitioning with no key**:
 2. **Random salting**:We can add a random number or timestamp to the ad ID
 3. **Use Compound Key:** use a combination of ad ID and another attribute, such as geographical region or user ID segments, to form a compound key
-4. **Back pressure**: slow down the producer if Lags too high
+4. **Back pressure**: The Kafka producer maintains an internal buffer (controlled by the `buffer.memory` configuration) where messages are temporarily stored before being sent to the broker. If your application produces messages faster than they can be transmitted or acknowledged, this buffer will eventually fill up. this slows down the producer if Lags too high. 
 
 ### Durability
 Kafka  provide durability by keeping partitions replicas on multiple other brokers, 1 broker acting as leader and other followers. Producer acknowledgments (acks setting) play a crucial role here. Setting acks=all ensures that the message is acknowledged only when all replicas have received it, guaranteeing maximum durability.
@@ -64,7 +64,7 @@ keeping the work of the consumer as small as possible is a good strategy -- as w
 
 
 ### Performance Optimizations
-1. we can do is batch messages in the producer before sending them to Kafka
-2. improve throughput is by compressing the messages on the producer. This can be done by setting the compression option in the producer configuration.
-3. the biggest impact you can have to performance comes back to your choice of partition key
-4. 
+5. we can do is batch messages in the producer before sending them to Kafka
+6. improve throughput is by compressing the messages on the producer. This can be done by setting the compression option in the producer configuration.
+7. the biggest impact you can have to performance comes back to your choice of partition key
+8. 

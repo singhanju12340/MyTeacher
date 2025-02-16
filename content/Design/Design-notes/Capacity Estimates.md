@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, July 4th 2024
-Modified Time: Tuesday, January 21st 2025
+Modified Time: Saturday, February 15th 2025
 ---
 2^2 = 4
 2^3 = 8
@@ -76,3 +76,20 @@ herefore, the decimal equivalent of (A7B)16 is (2683)10.
 
 64 Bit === 2^64 = 18,446,744,073,709,551,616  === to Million == 1.8447×1013 million
 32 bit == 2 Billion singed, 4 Billion unsigned
+
+
+
+Web socket average concurrent connection: 50K
+Application server concurrent connection: 10K
+DB server: 
+Kafka message standard size: 1MB
+1 Kafka broker can store around 1TB of data and handle around 10K messages per second.
+
+`Contrary to a common misconception, the capacity isn’t limited to 65,535 connections. That number refers to the range of port numbers, not the number of connections a single server port can handle. Each TCP connection is identified by a unique combination of source IP, source port, destination IP, and destination port. With proper OS tuning and resource allocation, a single listening port can handle hundreds of thousands or even millions of concurrent SSE connections.
+
+In practice, however, the server’s hardware and OS limits—rather than the theoretical port limit—determine the maximum number of simultaneous connections.
+
+
+`
+
+Spring boot tomcat container : 200 threads
