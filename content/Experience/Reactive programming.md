@@ -99,7 +99,48 @@ bufferedConsumer.subscribe(
 ```
 
 
-### Reactive async Webclient
+### Reactive async Web client
 
 ```Java
+// create client
+	Mono<ClientResponse> responseMono = webClient.get()  
+	.uri("/endpoint")  
+	.retrieve()  
+	.toBodilessEntity();
+
+// Call get method via client
+Mono<ApiResponse> responseMono = webClient.get()  
+	.uri("/endpoint")  
+	.retrieve()  
+	.bodyToMono(ApiResponse.class);  
+// consumer
+responseMono.subscribe(  
+	response -> System.out.println("Response: " + response),  
+	error -> System.err.println("Error: " + error.getMessage())  
+);
 ```
+
+
+#### Challenges of Reactive programming
+
+#### Performance matrix
+`1st expirement`
+ Called the endpoint with 10, 100, 1000, 5000, 10000 number requests and recorded the average time to complete each request and also the time to complete all requests
+
+![[Pasted image 20250216185815.png]](10000 requests for the Non Reactive way could not be handled in my machine due to limited resources. Hence, I assume that it is infinity (INF)).
+
+For both Reactive and Non Reactive, it takes pretty much the same time to complete its process when using a lower number of concurrent request. However, we see a large difference when it comes to a higher number of concurrent requests. With this, we can conclude that the reactive approach is useful for applications that will be used by a large number of users at the same time.
+
+_The reactive approach is useful for applications that will be used by a large number of users at the same time. It saves memory by completing all the processes in less time, so upcoming requests can be utilised without delay and failures.
+
+`2nd Expirement`
+Called 1000 concurrent request by adding different delays. The delays are 1sec, 5sec, 10sec, 15sec, 20sec.
+
+![[Pasted image 20250216193908.png]]
+
+we can observe the is a large difference in the time between the reactive way and the nonreactive way to complete heavy time-consuming tasks.
+ In the reactive way, it takes much less time to complete the bulk of time-consuming tasks. It saves memory by completing all the processes in less time, so upcoming requests can be utilised without delay and failures.
+
+
+
+
