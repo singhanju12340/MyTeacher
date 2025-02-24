@@ -122,6 +122,24 @@ responseMono.subscribe(
 
 
 #### Challenges of Reactive programming
+_Increased Complexity:_ Reactive systems require a different mindset. Composing asynchronous streams, handling backpressure, and coordinating multiple reactive sources can be harder to design and maintain compared to traditional imperative code.
+_Steep Learning Curve:_
+_Debugging and Error Handling_
+Tracing errors in asynchronous, non-blocking flows is more difficult. Stack traces can be fragmented or non-intuitive because the call stack doesn’t necessarily follow the logical flow of operations.
+_Tooling and Testing:_
+Writing effective tests for asynchronous flows may require specialized testing frameworks (like WebTestClient or StepVerifier).
+_Interoperability:_
+Integrating reactive code with legacy or blocking code can be challenging. Careful attention is needed when mixing paradigms to avoid performance bottlenecks.
+
+_**It can be memory intensive**_
+>>Reactive pipelines are built by chaining many operators (e.g., map, flatMap, filter). Each operator can create intermediate objects (e.g., context wrappers, lambdas) that remain in memory until the entire chain completes. This can add up, especially in complex pipelines.
+>>Maintaining context across asynchronous boundaries requires additional memory
+**Buffering and Backpressure:**  
+>>To manage asynchronous flows and handle bursts of data, reactive streams often use buffers. When the downstream consumer is slower than the upstream producer, the framework buffers items until they can be processed. If backpressure isn't applied correctly or if the system is overwhelmed, these buffers can grow and increase memory usage.
+**Concurrency and Task Scheduling:**  
+>>Reactive systems run many small tasks concurrently using event loops or thread pools. Although these tasks are lightweight, having a large number of them in flight at once may increase memory overhead compared to a more synchronous, linear approach.
+
+
 
 #### Performance matrix
 `1st expirement`

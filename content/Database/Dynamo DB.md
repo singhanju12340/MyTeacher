@@ -1,6 +1,6 @@
 ---
 Creation Time: Wednesday, October 9th 2024
-Modified Time: Thursday, January 30th 2025
+Modified Time: Monday, February 24th 2025
 ---
 _It is a fully-managed, highly scalable, key-value service provided by AWS. It can be majorly used for caching usecases.
 
@@ -24,3 +24,6 @@ ex: leader board, IOT data, product catalogue, shopping cart, session data
 **Data Modeling Constraints**: DynamoDB demands careful data modeling to perform well, optimized for key-value and document structures. If you find yourself frequently using Global Secondary Indexes (GSIs) and Local Secondary Indexes (LSIs), a relational database like PostgreSQL might be a better fit.
 
 **Vendor Lock-in**: Choosing DynamoDB means locking into AWS.
+
+
+Example cost: 2M writes a second of ~100 bytes would cost you about 100k a day.

@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, December 2nd 2024
-Modified Time: Monday, December 2nd 2024
+Modified Time: Saturday, February 22nd 2025
 ---
 
 ## Pessimistic vs Optimistic Locking
@@ -13,12 +13,8 @@ _Optimistic locking assumes conflicts are rare. It allows multiple users to acce
 Some best practices to consider:
 
 1. Hold locks for the minimum possible time to reduce contention.
-    
 2. Apply locks at the most granular level such as rows rather than tables.
-    
 3. Implement retry logic for transactions that fail due to conflicts.
-    
 4. Pessimistic locking is better for data integrity but can impact performance.
-    
 5. Optimistic locking is better for efficiency and performance._
 

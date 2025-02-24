@@ -2,7 +2,7 @@
 Creation Time :
 Modified Time :
 Creation Time: Monday, July 15th 2024
-Modified Time: Monday, November 18th 2024
+Modified Time: Sunday, February 23rd 2025
 ---
 InfluxDB, Prometheus DB, TimeScaleDB, Timestream
 
@@ -58,3 +58,4 @@ time series data is its **immutability**; once recorded, it generally remains u
 - Each data point exists in **relation to a timestamp**
 
 - **Timestream**: Developed by Amazon Web Services (AWS), Timestream is a fully managed time series database designed for handling large-scale, high-resolution data. It integrates well with other AWS services, offers built-in time series functions, and provides easy data ingestion and querying capabilities.
+

@@ -6,12 +6,11 @@ Problem statement:
 
 1. Too many 3rd party calls in parallel and in sequence.
 2. Heigh concurrent  request on the service
-3. Large payload transformation based on third party responses.
+3. Large payload transformation based on third party responses delays
+
 Capacity estimates: 
 
 
-
-
-Build integration service in reactive programming using java reactive programming along with Apache airflow..
+Build integration service in reactive programming using java reactive programming along with Apache airflow for managing workflows..
 
 [[Reactive programming]]
