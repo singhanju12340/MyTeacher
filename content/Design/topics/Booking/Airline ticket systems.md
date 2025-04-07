@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, July 29th 2024
-Modified Time: Saturday, February 22nd 2025
+Modified Time: Thursday, February 27th 2025
 ---
 ### Requirements:
 User should be able to login securely.
@@ -233,3 +233,22 @@ assume 100KB
 
 
 [[Two phase commit]]
+[[Serialisation for contentions]]
+
+
+### Example Scenario: How to improve consistency keeping latency reduced
+
+Imagine an airline booking system that maintains a single table for seat reservations. Without partitioning, every booking update might lock the entire table (or a large portion of it) to ensure consistency. Under heavy load, this leads to significant contention.
+
+**With Partitioning:**
+
+- You could partition the reservations table by flight number or date.
+- Updates for different flights (or even different dates) occur in separate partitions.
+- As a result, while updates for the same flight might still be serialized, updates for different flights can proceed in parallel.
+- Each partition still maintains consistency through serialization, but because the data is divided, the likelihood of concurrent updates colliding is much lower. This approach enhances scalability and performance while still ensuring data integrity."
+
+
+
+**Data Partitioning and Sharding:**
+
+- Effectively partitioning data (e.g., by flight number, geographic region, or time) to reduce contention and improve performance.

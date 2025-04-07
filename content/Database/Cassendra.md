@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, July 8th 2024
-Modified Time: Monday, November 18th 2024
+Modified Time: Friday, February 28th 2025
 ---
 
 Apache Cassandra is a highly scalable and distributed NoSQL database which can handle large amounts of data across multiple nodes and data centers.

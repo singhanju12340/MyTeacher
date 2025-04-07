@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, July 25th 2024
-Modified Time: Monday, February 24th 2025
+Modified Time: Thursday, February 27th 2025
 ---
 ### Requirement:
 user should be able to search cab for given source and destination to book the cab for price estimates
@@ -28,12 +28,45 @@ user should be able to watch booking history
 12. System should be highly available
 
 ### Capacity estimates:
+- **Total Users:** 50 million riders, 5 million drivers
+- **Daily Active Users (DAU):** 10 million riders, 1 million drivers
+- **Peak concurrent users**: 1 million riders, ~100,000 drivers (assuming 10% of DAUs are active at peak hours)
+- **Average Daily Ride Requests:** 10 million globally
+- **Peak rides per second (RPS):** ~5,000
 _user estimates_
-daily active user 10M
-user daily booking avg : 1 per day ~ 1M/86400 = 100 write/sec
+daily active user 10M, driver : 1M
+user daily booking avg : 1 ride per day by 1 user ~ 10M/86400 = 1000 write/sec
 daily cab search by user : 2 per day = 200 ride search/ sec
 _Driver estimates:_
-drivers: 10M, roughly sending location every 5 sec ~ 2M location update /sec
+Each 3 sec driver sends an update, assume at peak time 100,000 Driver sending location update
+100,000/3 = 34K location updates / sec
+
+
+### DB Storage  calculations:
+User & Driver profiles:
+- **Rider profile**: ~2 KB per user (name, email, phone, payment method, preferences)
+- **Driver profile**: ~5 KB per driver (vehicle details, license, payment details, ratings)
+- **Total storage for 50M users**: (50M × 2 KB) + (5M × 5 KB) = (**100 + 25) GB = 125 GB
+
+_Each Ride Entry data :_
+rideId  UUID: 16 Byte
+user Id: 8 byte
+driver id: 8 byte
+source & destination location : 16 byte
+date & location : 24 byte
+status: 8 byte
+total : 80 byte
+- **Total daily rides:** 10M
+- **Storage per day:** 10M × 80 Bytes = **800 MB**
+- **Storage per year (365 days):** **~300 GB**
+
+### API network bandwidth:
+- **Ride requests per second**: ~5,000 RPS
+- **Driver location updates per second**: ~33,333 RPS
+- **Total peak API requests**: ~40,000 RPS
+Assuming an **average API payload size** of **5 KB**, network bandwidth usage at peak:
+- **40,000 RPS × 5 KB = 200 MB/sec**
+
 
 ### API design:
 
@@ -271,6 +304,18 @@ _disadvantages and challanges_
 The main challenge with this approach is the complexity of managing a queueing system. We need to ensure that the queue is scalable, fault-tolerant, and highly available. We can address this by using a managed queueing service like Amazon SQS or Kafka, which provides these capabilities out of the box. This allows us to focus on the business logic of the system without worrying about the underlying infrastructure.
 
 The other issue with this approach is that since it is a `FIFO queue you could have requests that are stuck behind a request that is taking a long time to process.` This is a common issue with FIFO queues and can be addressed by using a priority queue instead. This allows us to prioritize requests based on factors like driver proximity, driver rating, and other relevant factors. This ensures that the most important requests are processed first, leading to a better user experience.
+
+
+
+
+###### How can you further scale the system to reduce latency and improve throughput?
+_sol 1_ : Horizontal Scaling with GEO sharding and read replicas
+A better approach is to scale horizontally by adding more servers. We can do this by sharding our data geographically and using read replicas to improve read throughput. This allows us to scale the system to handle more requests while reducing latency and improving throughput. Importantly, this not only allows us to scale but it reduces latency by reducing the distance between the client and the server.
+This applies to everything from our services, message queue, to our databases -- all of which can be sharded geographically. The only time that we would need to scatter gather (i.e., query multiple shards) is when we are doing a proximity search on a boundary.
+_challenges_
+Ensuring data is distributed evenly across shard 
+hot partition are not getting created
+failure and rebalancing is handled properly
 
 
 

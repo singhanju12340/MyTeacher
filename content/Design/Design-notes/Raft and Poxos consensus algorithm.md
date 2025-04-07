@@ -1,3 +1,7 @@
+---
+Creation Time: Wednesday, August 7th 2024
+Modified Time: Thursday, March 13th 2025
+---
 
 Distributed systems are complex systems that consist of multiple interconnected nodes, each of which can operate independently and potentially hold different copies of the same data. To ensure that all nodes work towards the same goal and have a consistent view of the data, it is necessary to establish some form of consensus among the nodes.
 
@@ -15,3 +19,6 @@ At a high level, the Raft algorithm can be implemented using the following steps
 4. Ensure that all nodes have a consistent view of the log by sending and receiving heartbeats.
 
 Let's take a closer look at each of these steps in turn.
+
+
+## Implementing the Poxos Algorithm

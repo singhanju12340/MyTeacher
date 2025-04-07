@@ -1,6 +1,6 @@
 ---
 Creation Time: Wednesday, July 17th 2024
-Modified Time: Sunday, January 12th 2025
+Modified Time: Thursday, April 3rd 2025
 ---
 
 ### 1. Token Bucket
@@ -114,10 +114,118 @@ _There are 2 places to add Rate limiter implementation:
 1. create separate API rate limiter service and deploy a full fledges rate limiter distributed service along with load balancer.
 2. Make rate limiter a library not a service, and use redis to update counter from service it self instead of calling. 
 
-### Sliding Window Log
 
-### 5. Sliding Window Counter
 
-**we do reach to a common conclusion, because question raised on line items are aways miunderstood as question raised on the person working on the current line item**
 
-this algorithm logs a timestamp for every request, whether allowed or not, which consumes significant memory. it is wasteful to perform work clearing outdated timestamps on every request.
+### Sliding Window
+If the number of requests served on configuration key `key(ip/userid)` in the last `time_window_sec` seconds is more than `number_of_requests` configured for it then discard, else the request goes through while we update the counter.
+
+ `For example, if we have a one-minute time window, the algorithm tracks requests made in the last 60 seconds, rather than resetting every minute.
+
+#### The Rate limiter has the following components
+
+- _**Configuration Store**_  To keep all the rate limit configurations. Ex: last 1 min 100 request aloowed. The primary role of the Configuration Store would be to efficiently store configuration for a key and efficiently retrieve the configuration for a key
+
+ there would be billions of entries in this Configuration Store, using a SQL DB to hold these entries will lead to a performance bottleneck and hence we go with a simple key-value NoSQL database like [MongoDB](https://mongodb.com/) or [DynamoDB](https://aws.amazon.com/dynamodb/) for this use case. Getting the rate limit configuration is a simple get on the Configuration Store by `key`. Since the information does not change often and making a disk read every time is expensive, we cache the results in memory for faster access.
+ EX: 
+ ```JSON
+Config store data
+{
+  "user:241531": {
+    "time_window_sec": 1,
+    "capacity": 5
+  }
+}
+user with id `241531` would be allowed to make `5` requests in `1` second.
+ ```
+
+
+
+_**Request Store **_ - to keep all the requests made against one configuration key, redis can be used for this purpose.
+Request Store will hold the count of requests served against each key per unit time. The most frequent operations on this store will be
+- registering (storing and updating) requests count served against each key - _write heavy_
+- summing all the requests served in a given time window - _read and compute heavy_
+- cleaning up the obsolete requests count - _write heavy_
+
+Since the operations are both read and write-heavy and will be made very frequently (on every request call), we chose an in-memory store for persisting it. A good choice for such operation will be a datastore like [Redis](https://redis.io/) but since we would be diving deep with the core implementation, we would store everything using the common data structures available.
+
+```JSON
+Request store data
+{
+	"user:241531//config key" :{
+		"epocTime": "number of request served on that sec",
+		1223435346: 24 // define atomic integer, 
+		2345465465: 34
+	}
+}
+```
+
+**_Decision Engine**_ - it uses data from the Configuration Store and Request Store and makes the decision
+
+
+
+```Java
+boolean isAllowed(long currentTime){
+	# the configuration holds the number of requests allowed in a time window.
+    config = getRateLimitConfig(key)
+
+    start_time = current_time - config.time_window_sec
+    // The window returned, holds the number of requests served since the start_time
+    int  number_of_requests = getCurrentWindowCount(key, start_time)
+
+    if number_of_requests > config.capacity:
+        return False
+
+    # Since the request goes through, register it.
+    registerRequest(key, current_time)
+    return True
+}
+
+Config getRateLimitConfig(key){
+	value = cache.getValue(key);
+	if(value == null){
+		value = dbstore.get(key);
+		cache.put(key, value);
+	}
+	return value;
+}
+
+int getCurrentWindowCount(key, startTime){
+	requestData = requestStore.get(key);
+	int totalRequest;
+	if(null == requestData)
+		return 0;
+
+	foreach(entry: requestData){
+		if(entry.getKey() < startTime)
+			totalRequest+=entry.getValue();
+		else
+			requestData.remove(entry.getKey());
+	}
+	
+	return totalRequest;
+}
+
+
+void registerRequest(key, time){ // update time counter atomically
+	storeEntry = requestStore.get(key);
+	int count = storeEntry.get(time)+1;
+	storeEntry.add(time, count);
+}
+
+```
+
+
+`Things to take care in multithreaded highly concurrent systems:
+1. registerRequest increment count, it has to be make atomic or implement lock while increment values.
+2. Since we are deleting the keys from the inner dictionary that refers to older timestamps (older than the `start_time`), it is possible that a request with older `start_time` is executing while a request with newer `start_time` deleted the entry and lead to incorrect `total_request` calculation. To remedy this we could either
+- delete entries from the inner dictionary with a buffer (say older than 10 seconds before the start_time),
+- take locks while reading and block the deletions
+1. - use a data structure that is optimized for range sum, like segment tree
+2. - use a running aggregation algorithm that would prevent from recomputing redundant sums
+3. Since the Request Store is doing all the heavy lifting and storing a lot of data in memory, this would not scale if kept on a single instance. We would need to horizontally scale this system and for that, we shard the store using configuration key key and use consistent hashing to find the machine that holds the data for the key.
+4. The number of configurations would be high but it would be relatively simple to scale since we are using a NoSQL solution, sharding on configuration key `key` would help us achieve horizontal scalability.
+
+
+
+[[SlidingWindow HLD]]

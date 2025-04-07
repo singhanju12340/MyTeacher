@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, July 25th 2024
-Modified Time: Friday, January 10th 2025
+Modified Time: Wednesday, March 26th 2025
 ---
 - Ability to upload videos fast
     
@@ -102,6 +102,34 @@ videos needs to be divided into small segments and can be compared based on diff
 **Block Matching** is a technique widely used in computer vision and video processing, particularly for motion estimation, video compression, and similarity detection. The goal is to find a block (or region) in one frame of a video that best matches a corresponding block in another frame.
 
 If the newly uploaded video is a subpart of an existing video or vice versa, we can intelligently divide the video into smaller chunks so that we only upload the parts that are missing.
+
+
+
+
+# The YouTube Challenge
+
+A content creator might have over 100 million subscribers. If push notifications were enabled by default for all subscribers, each new video upload would trigger a massive notification event.
+
+Ex:
+- 100 million subscribers receiving notifications
+- - Each notification packet might be ~1KB in size
+- - Total outbound data: 100 million × 1KB = 100GB of data
+- - Each connection requires memory for socket buffers, typically 8–16KB per connection
+- 100 million connections × 10KB average buffer = 1000GB (1TB) of memory just for connection buffers
+Beyond raw bandwidth and memory requirements, maintaining 100 million simultaneous TCP connections would create enormous overhead for connection state tracking, TCP window management, and operating system resources.
+
+### Real-World Solution: Multi-Tier Push Architecture
+YouTube (and similar platforms) solve this through a multi-tier push architecture:
+1. **Service tier**: YouTube’s servers detect a new video upload
+2. **Aggregation tier**: Rather than pushing directly to end-users, YouTube pushes the notification to platform notification services (Google Firebase Cloud Messaging for Android, Apple Push Notification Service for iOS)
+3. **Distribution tier**: These cloud services manage the actual delivery to millions of devices
+4. **Client tier**: Mobile devices receive notifications through their platform’s notification system
+
+The technical advantages of this approach include:
+1. **Connection pooling**: YouTube maintains only a few connections to notification services rather than millions to end-users
+2. **Batched delivery**: Notifications can be batched and prioritized
+3. **Specialized delivery infrastructure**: Platform notification services are specifically designed for high-scale delivery
+4. **Offline handling**: Platform services handle delivery to devices that come online later
 
 
 

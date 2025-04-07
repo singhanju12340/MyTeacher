@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, June 24th 2024
-Modified Time: Sunday, February 9th 2025
+Modified Time: Thursday, March 13th 2025
 ---
 ### Cache can be applied at 
 Application type
@@ -8,7 +8,7 @@ CPU cache
 GPU cache
 Etag cache
 Nginx Level cache
-
+API level cache
 
 ## Caches solution
 Redis
@@ -49,3 +49,34 @@ Cache stampede, sometimes referred to as "dog-piling," occurs when many clients 
 `Solution`
 When a cache miss occurs, only one thread or process is allowed to query the backend and refresh the cache.
 **TTL Jitter:**  Instead of having all cache entries expire at the same predictable moment, randomize TTLs slightly.
+Add rate limiter on DB
+add lock on key till that key is refreshed from the data store
+If no value present in db for some key, store null as a value in cache to avoid db calls 
+
+
+### Caching Library/Framework Integration
+
+- **Off-The-Shelf Solutions:**  
+    In production, many systems use established distributed cache solutions such as:
+    - **Redis Cluster:** A distributed version of Redis that supports partitioning and replication.
+    - **Hazelcast/Infinispan:** Java-based in-memory data grids that support distributed caching and provide APIs similar to Java's Map interface.
+    - **Apache Ignite:** Offers distributed caching with SQL support, transactions, and more.
+
+### How can we make local cache implementation as a distributed system
+```pgsql
+                     +-----------------+
+                     |  Client Requests|
+                     +--------+--------+
+                              |
+               +--------------v--------------+
+               | Distributed Cache Router  |
+               |  (consistent hashing ring)|
+               +--------------+--------------+
+                              |
+          +-------------------+-------------------+
+          |                   |                   |
+   +------v------+      +-----v------+     +-----v------+
+   | Cache Node 1|      |Cache Node 2|     |Cache Node 3|
+   | (Local LRU)|      | (Local LRU)|     | (Local LRU)|
+   +-------------+      +------------+     +------------+
+```

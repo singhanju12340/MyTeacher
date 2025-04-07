@@ -1,3 +1,7 @@
+---
+Creation Time: Monday, July 15th 2024
+Modified Time: Wednesday, March 26th 2025
+---
 
 ## 1 . Request-Response Pattern
 
@@ -90,7 +94,7 @@ Long polling is like polling but uses a **push-based** communication mechanism
 	**Difficult to Scale:** When dealing with a large number of concurrent clients, long polling can strain server resources. As more clients establish long-polling connections, the server may struggle to manage and respond to all these connections efficiently.
 	
 
-## 5. The Push Pattern
+## 5. The Push Pattern(Web Socket / Server Sent event /  RabbitMQ’s) 
 
 	Push is a communication model that is used to deliver real-time updates to connected clients.
 	
@@ -99,6 +103,19 @@ Long polling is like polling but uses a **push-based** communication mechanism
 	This model allows for bidirectional communication between the client and server. Web sockets, a popular protocol, uses the push model as its underlying data exchange method.
 	
 	The Push model provides the most real-time or near real-time end-user experience when compared to other closely related paradigms such as polling and long polling.
+
+#### Connection Establishment
+
+Initially, a TCP connection is established between the client and server using the standard three-way handshake. This provides a reliable, ordered stream of data between the two endpoints. On top of this TCP connection, a higher-level protocol like` WebSocket or AMQP` is established, which defines the rules for message formatting, delivery, and flow control.
+
+### How Push  works
+1. The client establishes a connection to the server
+2. This connection remains open, unlike the traditional request-response cycle where connections are typically closed after each interaction
+3. The server maintains a registry of connected clients and their subscription preferences
+4. When a relevant event occurs, the server identifies interested clients and pushes data through the established connections
+5. The client processes the incoming data without having explicitly requested it
+
+ This model effectively creates a unidirectional stream from the server side, though the underlying protocol is typically bidirectional. While TCP can function as a transport layer for push mechanisms, higher-level protocols built on TCP are often employed to manage the complexities of push communication.
 
 ###   Benefits of Push Pattern
 
@@ -114,3 +131,54 @@ Long polling is like polling but uses a **push-based** communication mechanism
 	**Scalability:** It can become difficult to scale as the number of connected clients increases. At this point, it becomes resource-intensive, especially on the server side since the server needs to maintain open connections with multiple clients.
 	
 	**Client support:** Some clients might not be able to handle pushed messages as not all client platforms support push technologies. This may lead to compatibility issues and may need some sort of fallback mechanism for unsupported clients.
+
+#### Socket Level Implementation
+##### How Socket connection estabilised:
+**Handshake**
+- **HTTP Upgrade:**  
+    A WebSocket connection starts with an HTTP/HTTPS handshake. The client sends an HTTP request with headers like `Upgrade: websocket` and `Connection: Upgrade` to request switching protocols from HTTP to WebSocket.
+- **Server Response:**  
+    If the server supports WebSockets, it responds with a 101 (Switching Protocols) status code, confirming the protocol upgrade. At this point, the connection is established as a WebSocket.
+**Establishing a Persistent Connection**
+**Full-Duplex Communication:** Once the handshake is complete, the connection remains open, allowing both the client and server to send messages independently at any time without the overhead of establishing new connections.
+**Stateful Communication:**  
+The connection is maintained across multiple messages, which is ideal for real-time applications like chat apps, live updates, or online gaming
+ **Data Framing**
+- **Frames:**  
+    WebSocket messages are divided into frames. A single message can be split across multiple frames, and a frame can carry a portion of the message data.
+**Masking:**  
+All frames sent from the client are masked to prevent certain security issues (like cache poisoning), while server-to-client frames are typically unmasked.
+`Server Side`
+```
+// Store all connected client sockets  
+connectedClients = []
+
+// When a client connects  
+onClientConnect(clientSocket):  
+    connectedClients.add(clientSocket)// When an event occurs  
+onEvent(eventData):  
+    message = formatMessage(eventData)  
+    for each socket in connectedClients:  
+        if isSubscribedToEvent(socket, eventData.type):  
+            socket.write(message)
+```
+
+`Client Side`
+```
+// Establish connection  
+socket = connectToServer()
+
+// Continuously read from socket  
+while socket.isConnected():  
+message = socket.read()  
+if message:  
+processMessage(message)
+```
+
+
+### Broadcasting of Audio and Video
+WebRTC Protocol
+[[WebRTC proctoring system]]
+
+
+[[Real Time Communication Guide]]

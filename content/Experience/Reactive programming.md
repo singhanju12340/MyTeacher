@@ -28,7 +28,7 @@ Ex: - Project Reactor
 
 Java reactive programming provides 4 interfaces, which needs to be extended to while creative reactive stream.
 
-1. Publisher: Single method interface, to register subscriber to producer 
+1. **Publisher**: Single method interface, to register subscriber to producer 
 	```Java
 	public interface Publisher<T>{
 		public void subscribe(Subscriber<? extends T> s) ;

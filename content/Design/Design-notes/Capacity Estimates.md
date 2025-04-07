@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, July 4th 2024
-Modified Time: Saturday, February 15th 2025
+Modified Time: Wednesday, March 26th 2025
 ---
 2^2 = 4
 2^3 = 8
@@ -27,6 +27,8 @@ Modified Time: Saturday, February 15th 2025
 1KB = 1024 B
 1mB = 1024 KB
 1 GB = 1024 mB
+
+1GB= 10^9 bits
 
 1 Char=8 bits=1 byte {-128 to 127} {-2^7+1 to 2^7}
 
@@ -63,6 +65,7 @@ Thus, **99.9% availability** allows for approximately **8 hours and 45 minutes o
 
 
 1000 MB * 1M = 1TB
+1KB * 1B = 1TB
 
 
 

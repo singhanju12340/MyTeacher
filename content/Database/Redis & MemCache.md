@@ -76,3 +76,7 @@ Also Redis perform in memory operations too quick because redis keeps data in me
 3. write ahead log, allows us to do atomic transactions
 4. Single leader application
 
+
+
+The _**Redis Sorted Set(priorty queue) **_: keep data sorted based on some parameter.
+Redis' sorted sets maintain ordered data which can be queried in log time which make them appropriate for leaderboard applications. The high write throughput and low read latency make this especially useful for scaled applications where something like a SQL DB will start to struggle.
