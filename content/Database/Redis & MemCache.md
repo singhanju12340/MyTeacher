@@ -1,11 +1,11 @@
 ---
 Creation Time: Monday, July 29th 2024
-Modified Time: Tuesday, January 21st 2025
+Modified Time: Monday, April 7th 2025
 ---
-In memory, Single threaded open source cache written in 'C'.
+In memory data structure, Single threaded open source cache written in 'C'.
 
 **Data structure:**
-Hash, List, Set, sorted set, bitmap, hyperlog log, geospatial index, streams 
+Hash, List, Set, sorted set(`priority queues`), bitmap, hyperlog log, geospatial index, streams, timeseries
 
 Application can be supported:
 Gaming leaderboard
@@ -13,6 +13,7 @@ message buffer
 auth session store
 realtime analytics
 
+`Redis can be configurated to expects all the data for a given request to be on a single node!**Choosing how to structure your keys is how you scale Redis.**
 
 _How much data redis single node can store: 
 - **Available Physical Memory (RAM)** on the server where Redis is running.
@@ -20,6 +21,9 @@ _How much data redis single node can store:
 -**For most 64-bit systems**, Redis can address up to **4 terabytes (TB)** of RAM, as long as the system itself supports that much physical memory.
 
 ## Advantages:
+#### Fast Read and write 
+
+Redis can handle O(100k) writes per second and read latency is often in the microsecond range
 #### Single Command on Redis is atomic: 
 if one command is running, no other command can be executed in between. Concurrency is not an issue for redis. and also there is no context switch as only single atomic command is executed.
 
@@ -54,9 +58,37 @@ Also Redis perform in memory operations too quick because redis keeps data in me
 ## Capabilities and Uses cases of Redis
 ### Redis as a Cache
 ### Redis as a Distributed Lock
+A very simple distributed lock with a timeout might use the atomic increment (INCR) with a TTL. When we want to try to acquire the lock, we run INCR. If the response is 1 (i.e. we own the lock), we proceed. If the response is > 1 (i.e. someone else has the lock), we wait and retry again later. When we're done with the lock, we can DEL the key so that other proceesses can make use of it.
 ### Redis for Leaderboards
+Redis' sorted sets maintain ordered data which can be queried in log time which make them appropriate for leaderboard applications.
+Each element (member) in a sorted set has a unique identifier (e.g., a post ID) and an associated numeric score (e.g., number of likes). The set is always ordered from the lowest to the highest score.
+```
+ZADD mostLikedPosts 100 post1
+ZADD mostLikedPosts 150 post2
+ZADD mostLikedPosts 80 post3
+ZREMRANGEBYRANK mostLikedPosts 0 -10 # Remove all but the top 10 posts
+
+- In this example, `post2` is the most liked post, followed by `post1`, then `post3`.
+- 
+ZINCRBY mostLikedPosts 1 post1 //This command increases `post1`'s score by 1. If multiple users like a post concurrently, Redis handles these increments atomically, ensuring data consistency.
+
+ZREVRANGE mostLikedPosts 0 9 WITHSCORES // retrun most liked top 10 post with score
+
+
+```
+Redis provides the `ZINCRBY` command, which allows you to increment the score of a member atomically. This is perfect for scenarios like liking a post.
 ### Redis for Rate Limiting
+Fixed-window rate limiter where we guarantee that the number of requests does not exceed N over some fixed window of time W
+When a request comes in, we increment (INCR) the key for our rate limiter and check the response. If the response is greater than N, we wait. If it's less than N, we can proceed. We call EXPIRE on our key so that after time period W, the value is reset.
 ### Redis for Proximity Search
+GEOADD key longitude latitude member # Adds "member" to the index at key "key"
+GEORADIUS key longitude latitude radius # Searches the index at key "key" at specified position and radius
+
+### Redis for Event Sourcing
+Redis' streams are append-only logs similar to Kafka's topics. The basic idea behind Redis streams is that we want to durably add items to a log and then have a distributed mechanism for consuming items from these logs. 
+
+Redis solves this problem with streams (managed with commands like XADD) and consumer groups (commands like XREADGROUP and XCLAIM).
+
 
 
 

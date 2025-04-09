@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, March 13th 2025
-Modified Time: Thursday, April 3rd 2025
+Modified Time: Wednesday, April 9th 2025
 ---
 2.5 k RPM
 
@@ -37,6 +37,138 @@ Define nodes based on roles:  Master, data, ingest, coordinating to distribute r
 - For quick, human-readable summaries (e.g., `_cat/health?v`, `_cat/indices?v`, `_cat/allocations?v`).
 - Use kibana dashboards for real-time monitoring of cluster, node, and index performance.
 - Proactive monitoring helps in early detection of issues such as unassigned shards, high GC times, or unexpected query latencies, allowing you to take corrective action before they impact production
+
+
+
+
 - 
 
 
+![[Screenshot 2025-04-09 at 12.46.03 PM.png]]
+
+
+Custom Analyser
+```
+"analysis" : {
+          "filter" : {
+            "french_stop" : {
+              "type" : "stop",
+              "stopwords" : "_french_"
+            },
+            "fuel_type_en_stop" : {
+              "ignore_case" : "true",
+              "type" : "stop",
+              "stopwords" : [
+                "_english_",
+                "fuel",
+                "type",
+                "fuel-type"
+              ]
+            },
+            "drive_type_en_stop" : {
+              "ignore_case" : "true",
+              "type" : "stop",
+              "stopwords" : [
+                "_english_",
+                "drive",
+                "type",
+                "wheel",
+                "drive-type",
+                "wheel-drive"
+              ]
+            },
+            "french_vehicle_synonyms" : {
+              "type" : "synonym",
+              "synonyms_path" : "fr_vehicle_synonyms.txt",
+              "updateable" : "true"
+            },
+            "french_elision" : {
+              "type" : "elision",
+              "articles" : [
+                "l",
+                "m",
+                "t",
+                "qu",
+                "n",
+                "s",
+                "j",
+                "d",
+                "c",
+                "jusqu",
+                "quoiqu",
+                "lorsqu",
+                "puisqu"
+              ],
+              "articles_case" : "true"
+            },
+            "french_stemmer" : {
+              "type" : "stemmer",
+              "language" : "light_french"
+            },
+            "vehicle_synonyms" : {
+              "type" : "synonym",
+              "synonyms_path" : "en_vehicle_synonyms.txt",
+              "updateable" : "true"
+            }
+          },
+          "analyzer" : {
+            "english_search_analyzer" : {
+              "filter" : [
+                "lowercase",
+                "stop",
+                "vehicle_synonyms"
+              ],
+              "tokenizer" : "standard"
+            },
+            "english_edge_ngram_analyzer" : {
+              "filter" : [
+                "lowercase",
+                "stop"
+              ],
+              "tokenizer" : "edge_ngram_tokenizer"
+            },
+            "english_fuel_type_edge_ngram_analyzer" : {
+              "filter" : [
+                "lowercase",
+                "fuel_type_en_stop"
+              ],
+              "tokenizer" : "standard"
+            },
+            "french_search_analyzer" : {
+              "filter" : [
+                "lowercase",
+                "french_stop",
+                "french_vehicle_synonyms"
+              ],
+              "tokenizer" : "standard"
+            },
+            "english_drive_type_edge_ngram_analyzer" : {
+              "filter" : [
+                "lowercase",
+                "drive_type_en_stop"
+              ],
+              "tokenizer" : "standard"
+            },
+            "french_edge_ngram_analyzer" : {
+              "filter" : [
+                "french_elision",
+                "lowercase",
+                "french_stop",
+                "french_stemmer"
+              ],
+              "tokenizer" : "edge_ngram_tokenizer"
+            }
+          },
+          "tokenizer" : {
+            "edge_ngram_tokenizer" : {
+              "token_chars" : [
+                "letter",
+                "digit"
+              ],
+              "min_gram" : "3",
+              "type" : "edge_ngram",
+              "max_gram" : "20"
+            }
+          }
+        }
+```
