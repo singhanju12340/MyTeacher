@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, September 12th 2024
-Modified Time: Wednesday, October 9th 2024
+Modified Time: Monday, April 14th 2025
 ---
 ## Search index reindexing challenges due to Schema changes:
 
@@ -130,3 +130,42 @@ oem with batch and less partition
 
 
 
+
+
+### Mongo DB pagination issue fixed while replaying all the events?
+`Removed Skip and limit based pagination. improved batch paginated query by using.
+
+Using `skip()` is not recommended when we have big data in MongoDB because always requires the server to walk from the beginning of the collection, you can use `_id` index with `limit()` to do pagination, because `_id` field is indexed by default in MongoDB so you can use this field for a good performance. So `skip: 10000` means MongoDB scans 10,000 docs and discards them — very inefficient!
+
+✅ Efficient Alternatives
+#### **Use Range-Based Pagination (a.k.a. "The Seek Method")**
+Instead of using `skip`, paginate using a **field like `_id`** or a **timestamp**.
+**Example:**
+
+```
+db.collection.find({ _id: { $gt: last_seen_id } }) 
+			 .sort({ _id: 1 })             
+			 .limit(10);
+```
+ Store the `last_seen_id` from the last page.
+Fast because it uses an index and avoids skipping over documents.
+
+**Use Indexed Field for Pagination**
+Pick a field that’s indexed and strictly increasing (like `createdAt`, `orderNumber`, etc.)
+```
+db.collection.find({ createdAt: { $gt: lastSeenTimestamp } })
+             .sort({ createdAt: 1 })
+             .limit(10);
+```
+
+**Use `$facet` with `$limit` + `$skip` carefully**, 
+The main strength of `$facet` is not performance over `skip`, but this:
+
+> You can **bundle multiple results (pagination + total + metadata)** in a single query, **with full consistency**, and **without multiple DB hits**.
+Let's break down MongoDB's `$facet` stage — it’s a **powerful aggregation tool** that lets you run **multiple pipelines in parallel** on the same input data.
+
+Without `$facet`, you’d need:
+1. One query for the data (`skip`, `limit`).
+2. Another query for the count (`countDocuments()`).
+`$facet` gives you both in **one round trip**, reducing latency and ensuring **data consistency** between your page and its count.
+Keep result size within **16 MB document limit**

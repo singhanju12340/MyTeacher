@@ -1,15 +1,15 @@
 ---
 Creation Time: Thursday, March 13th 2025
-Modified Time: Wednesday, April 9th 2025
+Modified Time: Monday, April 14th 2025
 ---
 2.5 k RPM
 
-Facets API response: 700-900 ms
-Search api response: 100 - 200 ms
+Facets API response: 300ms-900 ms
+Search api response: 100 - 400 ms
 matches response: 110 ms
 details api response: 30 -40 ms
 
-Total inventory count: 5.5M
+Total inventory count: 6.5M
 
 4 nodes 1TB each and 25 shards per node, the car inventory is horizontally partitioned into 100 shards. Each shard holds a fraction of the total inventory, determined by a hash function on the document's key. This allows Elasticsearch to efficiently distribute both data storage and query processing across the cluster, enabling scalable, high-performance search and retrieval in a large dataset.
 

@@ -1,6 +1,6 @@
 ---
 Creation Time: Thursday, July 4th 2024
-Modified Time: Wednesday, March 26th 2025
+Modified Time: Tuesday, April 15th 2025
 ---
 2^2 = 4
 2^3 = 8
@@ -96,3 +96,20 @@ In practice, however, the server’s hardware and OS limits—rather than the th
 `
 
 Spring boot tomcat container : 200 threads
+
+
+
+### Bit Manipulation
+
+Turn on number n at position i=2
+EX: number=9
+n = 9 = 0000.....1001
+x = 1 = 0000......0001, shift x by i positions.
+new x = 0000...0100 
+
+Ans: n or x 
+= 0000.....1001 OR 0000...0100  
+= 0000....1100 
+
+
+

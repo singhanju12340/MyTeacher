@@ -1,6 +1,6 @@
 ---
 Creation Time: Tuesday, November 5th 2024
-Modified Time: Thursday, November 28th 2024
+Modified Time: Monday, April 14th 2025
 ---
 **Preprod**
 Total Events: 10 lakhs, 
@@ -10,9 +10,9 @@ gm_0_0_0_aec_cp_ims_inventory_v3 2 2 93.3gb
 5 concurrent consumer
 
 **Prod**
-Total Events: 40 lakhs on prod 
-gm_0_0_0_aec_cp_search_inventory_v1  121.9gb
-gm_0_0_0_aec_cp_ims_inventory_v1 611.1gb
+Total Events: 60 lakhs on prod 
+gm_0_0_0_aec_cp_search_inventory_v1  881.9gb
+gm_0_0_0_aec_cp_ims_inventory_v1 811.1gb
 
 | .Time | Events lag | time diff | event processed |     |
 | ----- | ---------- | --------- | --------------- | --- |
@@ -69,13 +69,14 @@ triggered at 12 AM
 |                                    |            |            |            |            |            |     |     |
 |                                    |            |            |            |            |            |     |     |
 |                                    |            |            |            |            |            |     |     |
+|                                    |            |            |            |            |            |     |     |
 
 ### Problems:
 All network integrations was processed as a single event. 
 1. such as kafka consumer was consuming single event at a time
 2. Single vin was getting saved at a time in  ES, too much overloaded network calls to ES
 3. Replay trigger was fetch data from mongo in  batch, so producer was able to push 20 lakh vins with in 10 min
-4. Blob interaction was also done as a single
+4. Blob interaction was also done as a single call 
 
 
 ### Solution
@@ -83,7 +84,7 @@ First POC for batch ES interaction
 1. change kafka consumer batch consumer
 2. Query mongo in bluk
 3. Save ES in bulk
-4. Fetch and save blob in bulk
+4. Fetch and save blob in bulk or parallel
 5. Moved Fetch dealer details from single to batch api 
 
 
@@ -124,14 +125,3 @@ Send list of download url for blob, download a list. transform, then save in ES 
 GC setting for batch processing, using parallel GC: -XX:+UseParallelGC
 
 
-gm_0_0_0_private_aec_inventory
-
-public_onboarding_csco_topic
-public_drp_dealer_update
-
-gm_0_0_0_public_int_dealer_purchase_status_outbound
-gm_0_0_0_public_int_dealer_purchase_status_inbound
-
-
-gm_chevrolet_0_0_private_aec_dealer_update
-gm_cadillac_0_0_private_aec_dealer_update
