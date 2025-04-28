@@ -1,6 +1,6 @@
 ---
 Creation Time: Wednesday, March 12th 2025
-Modified Time: Tuesday, April 22nd 2025
+Modified Time: Saturday, April 26th 2025
 ---
 How much read traffic in VSR and VDP
 What matrix we take care for elastic search DBs
@@ -144,3 +144,31 @@ The system should provide below functionalities:
 - Users must be able to browse post feed which would contain the recent 10 posts from his/her account and followings' accounts sorted by time posted
 - Users must be able to follow other users
 - Users must be able to unfollow the users
+
+**:** Design an inventory/order management service
+
+Design a custom ad service
+
+Design splitwise. Expenses could be split in 3 ways: EQUAL, EXACT, PERCENTAGE  
+Had to implement 4 methods
+
+```lisp
+addUser()
+splitExpense()
+showExpenses()
+showExpensesForUser()
+```
+
+Problem 1: Similar to [https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/](https://leetcode.com/problems/number-of-visible-people-in-a-queue/description/)  
+Problem 2: Same as [https://leetcode.com/problems/find-the-longest-equal-subarray/description/](https://leetcode.com/problems/find-the-longest-equal-subarray/description/)
+[https://leetcode.com/problems/max-chunks-to-make-sorted-ii/](https://leetcode.com/problems/max-chunks-to-make-sorted-ii/)
+
+Design Facebook **(LLD)** :  
+Implement the below APIs  
+`public void post(int userId, int postId);`  
+`public void follow(int followerId, int followeeId);`  
+`public void unfollow(int followerId, int followeeId);`  
+`public List<Integer> getNewsFeed(int userId);`  
+`public List<Integer> getNewsFeedPaginated(Integer userId, Integer pageNumber);`  
+`public void deletePost(int postId);`  
+I have code with me, if required please ask in the comments. too big to paste here.

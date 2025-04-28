@@ -1,6 +1,6 @@
 ---
 Creation Time: Saturday, January 18th 2025
-Modified Time: Sunday, January 19th 2025
+Modified Time: Saturday, April 26th 2025
 ---
 
 ```java
@@ -31,7 +31,50 @@ static int counter=0;
 ```
 Issue 4: If the computer reboots the counter will restart to 0
 _Sol: store counter in the disk but I/O operation will be expensive and time consuming_
+```java 
+// On startup
+public void initializeCounter() {
+    // Read last used counter value from persistent storage
+    int lastCounter = readCounterFromDB();
+    counter.set(lastCounter + SAFE_INCREMENT);
+    
+    // Or scan existing IDs to find max counter value
+    long maxId = findMaxIdInDatabase();
+    counter.set(extractCounterFromId(maxId) + 1);
+}
+```
 
+Issue 5: How will you handle static value increment in multithreaded system
+_Sol:  use  private static final AtomicInteger counter = new AtomicInteger(0);_
+
+Issue 5: what is static counter limit reached?The counter will eventually exceed `Integer.MAX_VALUE` (2,147,483,647)
+_Sol: reset counter if limit is reached, 
+Switch to `long` instead of `int` for counters
+Reset counter after safe threshold (e.g., modulo 1,000,000)
+``` java
+public class HybridIdGenerator {
+    private static final int COUNTER_MAX = 1_000_000; // Limit counter range
+    private static final AtomicInteger counter = new AtomicInteger(0);
+    private static volatile long lastTimestamp = 0L;
+    
+    public static synchronized String generateId() {
+        long currentTime = System.currentTimeMillis();
+        
+        // Handle clock moving backward (NTP adjustment etc)
+        if (currentTime < lastTimestamp) {
+            currentTime = lastTimestamp;
+        }
+        
+        // Reset counter if new millisecond or overflow
+        if (currentTime != lastTimestamp || counter.get() >= COUNTER_MAX) {
+            counter.set(0);
+            lastTimestamp = currentTime;
+        }
+        
+        return String.format("%d%06d", currentTime, counter.getAndIncrement());
+    }
+}
+```
 
 
 _**UUID_
@@ -81,7 +124,7 @@ _12 byte id pattern_
 | 4 Byte   | 3 Byte           | 2 Byte            | 3 Byte  |
 Mongo DB Change above implementation to bellow because generally, mongo id nodes are 1/3 so machine Id can get wasted because of same repeated Ids, and this could better utilise 3 byte space.
 
-| epocsec | Randon id | Counter ID |
+| epocsec | Random id | Counter ID |
 | ------- | --------- | ---------- |
 | 4       | 5         | 3          |
 
@@ -92,7 +135,7 @@ Mongo DB Change above implementation to bellow because generally, mongo id nodes
 1. _**Flicker**_: Database Ticket server, needed Monotonic increasing ID
 	Flicker uses Mysql shared DB with master-master replica(each node generating id), so auto incremented Id had collision problem, because each system generated different auto increment id which collide any time.
 	`So they had to inject ID Generator
-	they did not GUID because of its big id size.
+	they did not use GUID because of its big id size.
 Instead of having ID generating service they use Database as database also provide id generation logic.
 
 `Database Ticket system
@@ -116,12 +159,55 @@ INSERT INTO tickets (`stub`) values (`a`) ON DUPLICATE KEY UPDATE ID = ID+1;		//
 Issue with this:
 One DB will have too much request overloaded
 _Sol_
-One ticket for even number generation
-One ticket for Odd number generation
+One db  for even number ticket generation
+One db for Odd number ticket generation
 
 If server breaks down, they restart with after adding some buffer to last generated numbers
 
 What if 64 bit exhausted: 1.8 * 10^19 numbers		
+
+#### Centralised Inventory service architecture diagram
+Central ID Service
+├── ID Range Reservations (e.g., assigns 1,000-1,999)
+├── Batch Expiration (reclaims unused ranges after timeout)
+└── Audit Log (track all allocations)
+
+Client Service
+├── Memory: Concurrent Queue (fast access) or redis for distributed systems. 
+├── Disk: Write-Ahead Log (crash recovery)
+└── Async Fetcher (pre-fetch when low)
+
+`Redis keeping batches Ids:
+LPUSH service-x-id-pool 10001 10002 10003
+RPOP service-x-id-pool
+
+`Service keeping batch id in concurrent queue
+```Java
+public class IdBatchManager {
+    private final BlockingQueue<Long> idQueue = new LinkedBlockingQueue<>();
+    private final int BATCH_SIZE = 1000;
+    private final int LOW_WATERMARK = 200;
+    
+    @PostConstruct
+    public void init() {
+        prefetchBatch();
+    }
+    
+    private void prefetchBatch() {
+        List<Long> newBatch = centralIdService.fetchIds(BATCH_SIZE);
+        idQueue.addAll(newBatch);
+    }
+    
+    public Long getNextId() {
+        if (idQueue.size() < LOW_WATERMARK) {
+            // Async refill
+            CompletableFuture.runAsync(this::prefetchBatch);
+        }
+        return idQueue.take();
+    }
+}
+```
+
 
 _**Twitter **_
 Twitter can reach 64 bit number and too height write throughput
@@ -136,14 +222,14 @@ It do not uses strict monotonically increasing IDs. but each api server gives un
 
 If client like Javascript do not support 64 bit integer id are given as string.
 If these numbers are exhausted, per machine sequence no will auto rotate from 0.
-`This approach gives twitter a  way to fetch twitter before or after a certain ID or time
+`This approach gives twitter a  way to fetch tweet before or after a certain ID or time
 
 _**Instagram**_
-also uses `SNOWFLAKE` with some modification 
+Uses `SNOWFLAKE` with some modification 
 
-| epoc                          | shard ID                   | sequence No |
-| ----------------------------- | -------------------------- | ----------- |
-| 41 (starts from 1st Jan 2011) | 13 (logical shard numbers) | 10          |
+| epoc                          | shard ID                       | sequence No |
+| ----------------------------- | ------------------------------ | ----------- |
+| 41 (starts from 1st Jan 2011) | 13 (logical shard numbers) bit | 10 bit      |
 
 1. Its requirement was Id should be sortable
 2. Id index should be stored in memory(64 bit can be)
