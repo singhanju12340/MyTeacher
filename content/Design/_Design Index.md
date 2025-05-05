@@ -31,7 +31,7 @@ Modified Time: Monday, December 2nd 2024
 	2.  [[Tinder MatchMaker]]
 7. [[Yelp]]
 8. E-commerce
-	1. [[Flash Sale]]
+	1. [[Design/Topics/deliveries/Flash Sale]]
 	2. [[Amazon]]
 9.  [[Reddit]]
 10. Booking System

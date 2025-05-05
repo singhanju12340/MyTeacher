@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, December 2nd 2024
-Modified Time: Thursday, March 27th 2025
+Modified Time: Monday, April 28th 2025
 ---
 
 
@@ -43,7 +43,7 @@ User (can be in mysql)
 	email
 	profilePicUrl
 
-1B users, data is hugewe need to partition. user userId. less read and less write
+1B users, data is huge we need to partition user data by userId. less read and less write
 
 
 
@@ -75,8 +75,8 @@ Message
 	metadata (for analytics)
 
 (for book keeping and delivering message for offline users later).
- pariting over chatId and sorting over timestamp column
-  order message on all the users device should be in same order, better to use server side timestamp
+ pariting over chatId and sorting over timestamp column.
+message order on all the users device should be in same order, better to use server side timestamp
 
 more read or more write? 
 > More write
@@ -134,7 +134,7 @@ One user can have multiple client Id, as we need to store user to client mapping
 
 Working:
 1. One to One messaging
-	1. User sends a message first time  chat server checks the connection cash to find User B chat server, if its present gets WS connection details for User B. Else create a new WS connection and save the same in the cache via write-through cache strategy.
+	1. User sends a message first time  chat server checks the connection cache to find User B chat server, if its present gets WS connection details for User B. Else create a new WS connection and save the same in the cache via write-through cache strategy.
 	2. Once a connection is established users' initial Http connections are transformed to 2 way WS connection and communication starts.
 	3. All messages are sent to the Message service to store them on DB for history and data persistence.
 	4. Session persistence: Load balancer can use sticky session to keep connection alive from the same chat server to avoid delay. we can also use service discovery to find chat servers and establish a connection based on the algorithms like round robin or lease connection server

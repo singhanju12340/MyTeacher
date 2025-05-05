@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, July 29th 2024
-Modified Time: Monday, April 7th 2025
+Modified Time: Wednesday, April 30th 2025
 ---
 In memory data structure, Single threaded open source cache written in 'C'.
 
@@ -59,6 +59,9 @@ Also Redis perform in memory operations too quick because redis keeps data in me
 ### Redis as a Cache
 ### Redis as a Distributed Lock
 A very simple distributed lock with a timeout might use the atomic increment (INCR) with a TTL. When we want to try to acquire the lock, we run INCR. If the response is 1 (i.e. we own the lock), we proceed. If the response is > 1 (i.e. someone else has the lock), we wait and retry again later. When we're done with the lock, we can DEL the key so that other proceesses can make use of it.
+![[Screenshot 2025-04-30 at 1.21.31 PM.png]]
+
+
 ### Redis for Leaderboards
 Redis' sorted sets maintain ordered data which can be queried in log time which make them appropriate for leaderboard applications.
 Each element (member) in a sorted set has a unique identifier (e.g., a post ID) and an associated numeric score (e.g., number of likes). The set is always ordered from the lowest to the highest score.
@@ -77,7 +80,9 @@ ZREVRANGE mostLikedPosts 0 9 WITHSCORES // retrun most liked top 10 post with sc
 
 ```
 Redis provides the `ZINCRBY` command, which allows you to increment the score of a member atomically. This is perfect for scenarios like liking a post.
-### Redis for Rate Limiting
+### Redis for  Rate Limiting API Requests)
+![[Screenshot 2025-04-30 at 1.21.59 PM.png]]
+
 Fixed-window rate limiter where we guarantee that the number of requests does not exceed N over some fixed window of time W
 When a request comes in, we increment (INCR) the key for our rate limiter and check the response. If the response is greater than N, we wait. If it's less than N, we can proceed. We call EXPIRE on our key so that after time period W, the value is reset.
 ### Redis for Proximity Search
@@ -90,7 +95,21 @@ Redis' streams are append-only logs similar to Kafka's topics. The basic idea be
 Redis solves this problem with streams (managed with commands like XADD) and consumer groups (commands like XREADGROUP and XCLAIM).
 
 
+### Redis Session Store:
+The web server stores the user’s data and preferences.
+Yet it’s hard to scale a _stateful_ web server.
+So they installed a separate session store using Redis.
+![[Screenshot 2025-04-30 at 1.22.21 PM.png]]
 
+Storing Session Data in a Separate Store
+
+How it works:
+- Session data is stored in the Redis hash data structure
+- An expiry time is set for each user's data
+- The expiry time gets renewed whenever the user requests something
+It let them
+- Scale _stateless_ web servers easily
+- Handle traffic spikes
 
 
 # Redis rs Memcache

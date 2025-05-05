@@ -1,6 +1,6 @@
 ---
 Creation Time: Monday, July 29th 2024
-Modified Time: Wednesday, January 8th 2025
+Modified Time: Tuesday, April 29th 2025
 ---
 
 A **Flash Sale System** allows a large number of users to purchase limited-stock items in a short period, often leading to high traffic and race conditions. The system must handle concurrency, scalability, and fairness effectively.
@@ -10,25 +10,21 @@ A **Flash Sale System** allows a large number of users to purchase limited-stock
     
     - Admins can configure products for the flash sale with details like stock, price, and sale start time.
 - **User Participation**:
-    
     - Users can view products and attempt to purchase during the sale.
 - **Purchase Handling**:
-    
     - Ensure fair order allocation based on "first-come-first-served" principles.
     - Deduct stock atomically for successful purchases.
     - 1 inventory should be sold to only 1 user.
 - **Notifications**:
-    
     - Notify users about successful or failed purchases.
 - **Sale Summary**:
-    
     - Generate a summary of products sold and remaining stock.
 
 
 ## NFR: 
 _High availability_: System should be available
 _High concurrency_: millions of request concurrently
-_Consistency_: Ensure no stock is oversold. Use locking mechanisms (e.g., Redis locks) to prevent overselling of stock.
+_Consistency_: Ensure no stock is oversold. Use locking mechanisms (e.g., Redis distributed locks) to prevent overselling of stock.
 _Latency_: quick responsiveness
 _Fairless_ : Queue purchase requests to ensure fair processing and avoid overloading the system.
 
@@ -45,6 +41,7 @@ _Fairless_ : Queue purchase requests to ensure fair processing and avoid overloa
 1. Have a system check in place to deduct and prevent DDos Attack
 2. A rate limit should be placed on the number of request from single IP.
 3. Suspicious IPs should be banned to access flash sale
+
 #### Over Sale prevention
 1. Lock inventory once user place an order
 2. decrement inventory count once payment for an order is successfull.
@@ -66,31 +63,46 @@ _Fairless_ : Queue purchase requests to ensure fair processing and avoid overloa
     - Acts as the entry point for all user requests.
     - Ensures authentication and rate-limiting.
     - Add Circuit Break Hystrix to stop accepting request after certain number of failures to stop catastrophic.
-1. **Load Balancer** NGINX: 
-    
+2. **Load Balancer** NGINX: 
     - Distributes incoming traffic across multiple app servers.
 3. **Application Servers**:
-    
     - Handle user requests (order placement, stock checks).
     - Interact with the product catalog and order service.
 4. **Cache Layer (Redis)**:
-    
     - Stores product inventory for fast access.
     - Implements distributed locks for atomic stock deduction.
 5. **Database**:
-    
     - Stores persistent product, order, and user data.
     - Maintains transaction logs for audit and recovery.
 6. **Notification Service**:
-    
     - Sends real-time notifications for order outcomes.
 7. **Message Queue**:
-    
     - Queues order requests to ensure sequential processing and avoid overload.
 8. **Analytics System**:
-    
     - Tracks user behaviour and generates sales reports.
 
 
 
-[[Drawing 2025-01-08 12.05.12.excalidraw]]
+[[Excalidraw/Flash sale]]
+
+
+### How RazorPay was able to handle 1500 RPS food flash sale during  IPL 
+
+1. Keeping ratelimiter to avoid server failures.
+	Used Nginx rate limiter and deployed in `Side car deployment pattern`.
+
+2. Used connection pooling for Mysql DB using proxySql(also deployed in side car), because there tenants application was build in PHP, which does not support connection pooling due to its process execution model.
+	proxySql handled the connection pooling, query response caching .
+	
+3. Avoided Thundered herd problem 
+	Used ProxySQL to throttle tenants issuing expensive database queries.
+
+4. Load testing
+	used Graphana K6 load testing tool 
+
+5. Auto Scaling
+	Takes 4 min to deploy and run new containner, they  prewarm their infrastructure and used baked containers for quick deployments.
+6. Smart Routing
+	Used LLM models to decide traffic routing to most operational External gateways to avoid payment failures and retries.
+7. Fly Wheel effect
+	Monitor-> find issues -> fix -> repeat.
