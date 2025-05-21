@@ -4,6 +4,8 @@ Modified Time: Wednesday, April 2nd 2025
 ---
 The Java Executor Framework is a high-level API in the java.util.concurrent package that abstracts away the details of thread creation and management, allowing you to focus on task submission and result handling.
 
+**_It provides a way to separate the task execution logic from the application code, allowing developers to focus on business logic rather than thread management._**
+
 ### Core Components
 
 Executor Interface
@@ -71,5 +73,17 @@ executor.shutdown();
     The ScheduledExecutorService is ideal for tasks that need to run after a delay or repeatedly at fixed intervals.
 
 
+Example
+```Java
+ExecutorService pool = Executors.newFixedThreadPool(50);
 
+while (true) {
+    Socket clientSocket = serverSocket.accept();
+    pool.submit(() -> handleRequest(clientSocket)); // Decoupled!
+}
+
+void handleRequest(Socket socket) {
+    // Business logic (e.g., HTTP parsing)
+}
+```
 

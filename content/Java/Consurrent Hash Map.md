@@ -7,6 +7,8 @@ Pre Java 8
 Concurrent hash map used segment locking. and algorithms like
 **Lock-Free Algorithms and CAS (Compare-And-Swap):**
 - ConcurrentHashMap heavily relies on non-blocking algorithms using CAS for updating entries without locking the entire table.
+- Do not throw concurrent modification exception
+- provide weak consistency
 
 JAVA 8:
 _Bucket Lock_

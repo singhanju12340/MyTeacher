@@ -12,7 +12,7 @@ custom solution might choose a different strategy such as `open addressing or ev
 
 adjust the load factor and table size. By reducing the load factor threshold, the HashMap resizes more frequently, which decreases the number of elements per bucket and, therefore, the likelihood of collisions. However, this comes at the cost of increased memory usage.
 
-Java 8’s HashMap converts buckets with high collision counts into balanced trees, which ensures that lookup times remain O(log n) in the worst-case scenario.
+`Java 8’s HashMap converts buckets with high collision counts into balanced trees, which ensures that lookup times remain O(log n) in the worst-case scenario.
 
 
 `open addressing 

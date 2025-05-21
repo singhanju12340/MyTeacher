@@ -184,6 +184,51 @@ SPLUNK
 
 
 
+WAY FAIR
+
+ Design a parking lot.
+
+Design a parking lot system
+- Consider the size and layout of the parking lot
+- Include designated parking spaces for different types of vehicles (e.g. compact, regular, handicapped)
+- Implement a ticketing system for entry and exit
+- Incorporate security measures such as surveillance cameras and barriers
+- Include a payment system for parking fees
+It consisted of one standard LLD question — Parking Lot.
+
+After gathering the information about the requirements, I had to create a class diagram of all the objects and there corresponding methods (functions). Then need to outline the database schema for the same. Also, provide the strategy to efficiently alot the vehicles in Parking lot.
+
+
+Q1. There are fifteen horses and a racing track that can run five horses at a time. You have to figure out the top 3 horses out of those and you don't have any timer machine to measure. How will you find the top 3 horses?
+
+
+
+View answer (2)![](https://static.ambitionbox.com/static/blue_arrow_right.svg)[View all 99 questions](https://www.ambitionbox.com/profiles/software-engineer-ii/interview-questions)
+
+
+**VISA:**
+
+Java. + Coding 
+buy and sell stock
+oops
+fail safe and fail fast iterators
+hashmap default size and resizing
+JVM 3 types of class loader
+object immutability
+garbage collection and algorithms
+normal object and object pooling
+thread pool type and use cases
+how to store sensitive data char[] vrs string
+java streams group by multiple keys and freq count
+
+HM
+Design write intensive server that support both read and write operation with tradeoff
+HLD for book my show
+standdard project and team colaborations
+
+
+
+
 
 
 
