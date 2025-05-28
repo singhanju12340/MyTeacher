@@ -156,3 +156,84 @@ A **consumer group** is a logical identifier for a set of consumers that.
 
 #### Kafka Mirrormaker
 Kafka's mirroring feature makes it possible to maintain a replica of an existing Kafka cluster. The following diagram shows how to use the _MirrorMaker_ tool to mirror a source Kafka cluster into a target (mirror) Kafka cluster. The tool uses a Kafka consumer to consume messages from the source cluster, and re-publishes those messages to the local (target) cluster using an embedded Kafka producer.
+
+
+
+
+##### Kafka confluent vrs Kafka Kubernetes setup
+
+**Kubernetes**:
+Kubernetes offers constructs to manage a set of containers together as a stateless or stateful cluster. Kubernetes manages a set of [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/ "Pods on Kubernetes.io"). Each Pod is a set of functionally related containers deployed together on a server called a [Node](https://kubernetes.io/docs/concepts/architecture/nodes/ "Nodes on Kubernetes.io"). To manage a stateful set of nodes like a Kafka cluster, we used Kubernetes [StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/ "StatefulSets on Kubernetes.io") to control deployment and scaling of containers with an ordered and graceful deployment of changes including guarantees to prevent compromising the overall service availability. 
+
+Used own kafka image and used own custom repository with verified application dependencies.
+we extended it using [Custom Resources and Controllers](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/ "Custom Resources on Kubernetes.io"), an extension for Kubernetes API to create user-defined resources and implement actions when these resources are updated, which was not provided default.
+- [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/ "Persistent Volumes on Kubernetes.io") is persistent storage for Kafka pods and guarantees that a Pod always mounts the same disk volume when it restarts.
+
+
+
+### Can a Kafka cluster have brokers of different Kafka versions?
+Issue: https://issues.apache.org/jira/browse/KAFKA-7886
+
+**Yes, a Kafka cluster can temporarily have brokers of different Kafka versions during a rolling upgrade, and this is the recommended way to upgrade Kafka without downtime.**
+
+how it generally works::
+1. **Rolling Upgrades:** The standard Kafka upgrade procedure involves upgrading brokers one by one. This means that for a period, your cluster will contain a mix of old-version and new-version brokers.
+2. **Backward/Forward Compatibility:** Kafka is designed with backward and sometimes forward compatibility in mind, primarily managed through the `inter.broker.protocol.version` configuration.
+ 3. set `inter.broker.protocol.version` to the **oldest version** that any broker in the cluster is running. This ensures that all brokers can communicate with each other using a mutually understood protocol.
+ 4. Once all brokers have been upgraded to the new binary, and the cluster is stable, you then perform _another_ rolling restart to update `inter.broker.protocol.version` to the **new version**. This allows the cluster to leverage new protocol features.
+ 5. Only after all brokers are running 2.x binaries and `inter.broker.protocol.version` is set to `2.x` should you consider setting `log.message.format.version` to `2.x`
+
+
+## How do we ensure Kafka cluster Scalability and Relaibility?
+#### Scalability:ability to handle increasing amounts of data and higher throughput
+
+`Partitioning Strategy`: Partitions are the primary unit of parallelism in Kafka. 
+_More Partitions = More Parallelism
+_Choosing the Right Numbe_
+Too few partitions can limit throughput. Too many can increase end-to-end latency, put pressure on ZooKeeper/KRaft (for metadata management), and lead to more open file handles on brokers
+_Key-based Partitioning
+
+`Horizontal Scaling` Adding new broker, but it needs Data rebalancing.
+
+`Producer Scalability`: 
+Batching: 
+Compression
+Asynchronous Sending
+
+`Consumer Scalability`: Scale out consumption by adding more consumer instances to a consumer group, up to the number of partitions in the topic
+Ensure consumer logic is efficient.
+
+`Hardware and Infrastructure`:
+ > Ensure Brokers have adequate CPU, memory (especially for page cache), fast disks (SSDs are highly recommended for log segments), and sufficient network bandwidth.
+ >Optimize network settings. Use high-speed, low-latency networks between brokers and between clients and brokers
+ 
+ `Monitoring and Tuning:`
+ Continuously monitor key metrics `(broker CPU/memory/disk/network, partition distribution, consumer lag, request latency) `to identify bottlenecks.
+Tune broker, topic, producer, and consumer configurations based on observed performance and workload characteristics
+
+
+#### Reliability: ensuring data durability (no data loss) and high availability (the cluster remains operational even if some components fail)
+`Replication Factor` : Typically 3
+
+`Leader and Followers:` For each partition, one broker acts as the leader
+`Fault Tolerance:` If a broker hosting a partition leader fails, one of the in-sync follower replicas can be automatically elected as the new leader, ensuring data remains available.`
+`In-Sync Replicas`: Kafka only considers a message "committed" by the producer when it has been written to the leader and all ISRs
+`Producer Acknowledgements`
+**`acks=0`:** Producer doesn't wait for acknowledgement
+**`acks=1`:** Producer waits for the leader to acknowledge the write
+**`acks=all` (or `-1`):** Producer waits for the leader and all current in-sync replicas
+
+`Graceful Shutdown and Leader Election`: When a leader fails, the controller (a broker responsible for cluster metadata) elects a new leader from the ISR list
+
+`Data Durability and Persistence`: 
+persists all messages to disk
+`log.flush.interval.messages` and `log.flush.interval.ms` to control how frequently data is fsynced to disk, balancing performance with durability against OS crashes
+`ZooKeeper / KRaft (Control Plane Reliability):`
+ZooKeeper (Legacy)
+KRaft (Kafka Raft Metadata mode - Recommended for new deployments)
+
+`Monitoring and Alerting for Reliability:`
+- Monitor under-replicated partitions, ISR shrink/expansion, controller health, broker availability, and disk space.
+- Availability Zone Awareness: Kafka will try to distribute replicas of a partition across different racks/AZs. This protects against data loss or unavailability if an entire rack/AZ fails.
+`Disaster Recovery`:
+protection against data center failures, consider cross-cluster replication tools like Kafka MirrorMaker or other third-party solutions to replicate data to a standby Kafka cluster in a different geographical region.

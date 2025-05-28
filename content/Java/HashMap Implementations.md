@@ -18,12 +18,13 @@ adjust the load factor and table size. By reducing the load factor threshold, th
 `open addressing 
 
 - In open addressing, all entries are stored directly within the hash table array.
-
 - When a collision occurs (i.e., when two keys hash to the same slot), the algorithm searches for another free slot using a probing sequence.
+- When a collision occurs (i.e., when two keys hash to the same slot), 
+i.e If `hash(newkey)` leads to a full slot, try `hash(newkey) + f(1)`, then `hash(newkey) + f(2)`, then `hash(key)newkey+ f(3)`, and so on (all modulo table size), until an empty slot is found. The function `f(i)` determines the probing sequence.
 - Common probing strategies include:
-    - **Linear Probing:** Check the next slot (and continue sequentially) until an empty slot is found.
-    - **Quadratic Probing:** Use a quadratic function to compute the next slot.
-    - **Double Hashing:** Use a second hash function to determine the step size for probing.
+    - **Linear Probing:** Check the next slot (and continue sequentially) until an empty slot is found. (`H+1`, `H+2`, `H+3`, ...)
+    - **Quadratic Probing:** Use a quadratic function to compute the next slot. (`H+1^2`, `H+2^2`, `H+3^2`, ...).
+    - **Double Hashing:** Use a second hash function to determine the step size for probing. `f(i) = i * hash2(key)`.
 
 **Pros:**
 - **Space Efficiency:**  
@@ -41,18 +42,19 @@ Deleting an element requires careful handling (such as using "deleted" markers) 
 
 `` Cuckoo hashing.
 
-- Cuckoo hashing uses two (or more) hash functions and two (or more) hash tables (or one table with multiple potential positions) for keys.
-- Each key can reside in one of several possible locations determined by these hash functions.
-- **Insertion:**  
-    When inserting a key, if one candidate position is occupied, the existing key is “kicked out” (like a cuckoo bird in another’s nest) and moved to its alternate location. This eviction process might cascade if the alternate location is also occupied.
-- **Rehashing:**  
-    If an insertion loop occurs (i.e., cycles of eviction), the table is rehashed with new hash functions.
+- Cuckoo hashing uses two (or more) hash functions and two (or more) hash tables (or one table with multiple potential positions) for keys. Each key can reside in one of several possible locations determined by these hash functions.
 
-**Pros:**
-- **Constant Worst-Case Lookup:**  
-    Since each key resides in one of only a few locations, lookup is very fast—typically O(1) worst-case.
-- **Deterministic Lookups:**  
-    No long chains or probe sequences, making lookups predictable.
+**Core Idea:**
+- Each key `x` can be stored in one of two locations: `h1(x)` or `h2(x)`.
+ **Lookup:** To find `x`, check `table[h1(x)]` and `table[h2(x)]`. If `x` is in the table, it must be in one of these two spots. _**This makes lookups very fast (O(1) in the common case).**_
+**Insertion:**(like a cuckoo bird in another’s nest) 
+1. When inserting a new key `x`, try to place it in `table[h1(x)]`.
+2. If `table[h1(x)]` is empty, place `x` there. Done.
+3. If `table[h1(x)]` is occupied by `y`, "kick out" `y`. Place `x` in `table[h1(x)]`.
+4. Now, `y` needs to be re-homed. `y` was in `table[h1(y)]` (which is the same slot as `h1(x)`). So, try to place `y` in its _alternative_ location, `table[h2(y)]`.
+5. If `table[h2(y)]` is empty, place `y` there. Done.
+6. If `table[h2(y)]` is also occupied (say by `z`), kick out `z`, place `y` there, and now `z` needs to be re-homed to its alternative location.
+
 **Cons:**
 - **Insertion Complexity:**  
     Insertions can be more complex and might require multiple evictions or even table rehashing if cycles occur.
@@ -64,12 +66,10 @@ Deleting an element requires careful handling (such as using "deleted" markers) 
 
 
 **WeakHashMap vs. HashMap**
-
-
  **HashMap:**  
         Uses **strong references** for keys. This means that as long as an entry exists in the HashMap, the key will not be garbage collected—even if there are no other references to the key.
         used when you need to store data without worrying about entries disappearing due to garbage collection
-    - **WeakHashMap:**  
+**WeakHashMap:**  
         Uses **weak references** for keys. If a key is no longer referenced elsewhere (i.e., only held weakly by the map), it becomes eligible for garbage collection, and its corresponding entry is automatically removed from the map.
         Often used for caches or mappings where you don’t want the presence of the map to prevent keys from being garbage collected
 

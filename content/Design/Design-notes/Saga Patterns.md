@@ -20,19 +20,21 @@ Sagas can be implemented in “two ways” primarily based on the logic that coo
 1. _**Choreography based sagas**_
 	a local transaction publishes events that trigger other participants to execute local transactions. In an orchestrated-based saga, a centralized saga orchestrator sends command messages to saga participants telling them to execute local transactions.
 	there is no central coordinator to tell saga participants what to do. Saga participants subscribe to each other’s events and respond accordingly
-![[Screenshot 2025-04-03 at 8.09.07 PM.png]]
+![[Screenshot 2025-04-03 at 8.09.07 PM.png]] // this example flow is different than below example
 	
 The **HAPPY** path through this SAGA is as follows:
-2. _Order Service_ creates an Order in the `APPROVAL_PENDING` state and publishes an `OrderCreated` event.
-3. _Consumer Service_ consumes the `OrderCreated` event, verifies that the consumer can place the order, and publishes a `ConsumerVerified` event.
-4. _Kitchen Service_ consumes the `OrderCreated` event, validates the Order, creates a Ticket in a `CREATE_PENDING` state, and publishes the `TicketCreated` event.
-5. _Accounting Service_ consumes the `OrderCreate` event and creates a `CreditCardAuthorization` in a `PENDING` state.
-6. _Accounting Service_ consumes the `TicketCreated` and `ConsumerVerified` events, charge the consumer’s credit card, and publish the `CreditCardAuthorized` event.
-7. _Kitchen Service_ consumes the CreditCardAuthorized event and changes the state of the Ticket to `AWAITING_ACCEPTANCE`.
-8. _Order Service_ receives the `CreditCardAuthorized` events, changes the state of the Order to `APPROVED`, and publishes an `OrderApproved` event.
+- **Order Created:** Customer places an order, **Order Service** records it as `PENDING` and publishes an `OrderCreatedEvent`.
+- **Payment Processed/Failed:** The **Payment Service** listens for `OrderCreatedEvent`, processes payment. If successful, it publishes `PaymentProcessedEvent`; if failed, `PaymentFailedEvent`.
+- **Inventory Reserved/Released:** The **Inventory Service** listens for `PaymentProcessedEvent` (or sometimes `OrderCreatedEvent`). If it reserves stock, it publishes `InventoryReservedEvent`. If `PaymentFailedEvent` occurs, it compensates by releasing stock.
+- **Order Status Updated:** The **Order Service** listens for `PaymentProcessedEvent` or `InventoryReservedEvent` to mark the order `COMPLETED`, or for `PaymentFailedEvent` to mark it `CANCELLED`.
+- **Shipping Initiated:** The **Shipping Service** listens for `InventoryReservedEvent` to start the delivery process.
+FAILURE Scenario (Choreography - Payment Fails):
+1. **Order Service:** Creates `PENDING` order, publishes `OrderCreatedEvent`.
+2. **Payment Service:** Receives `OrderCreatedEvent`, **payment fails**, publishes `PaymentFailedEvent`.
+3. **Order Service:** Receives `PaymentFailedEvent`, updates order to `CANCELLED`.
+4. **Inventory Service:** (If it reserved stock earlier) Receives `PaymentFailedEvent` (or `OrderCancelledEvent`), **releases previously reserved stock** (compensating transaction).
 
 `Advantage:
-
 Loose coupling
 Simple
 
@@ -42,19 +44,36 @@ can lead to cyclic dependency
 
 
 2. _**Orchestration based sagas**_
-a central Saga orchestration class is responsible to tell saga participants what to do. Like Zookeeper
+a central Saga **Orchestrator Service** class is  to tell saga participants what to do. Like Zookeeper
 ![[Screenshot 2025-04-03 at 8.09.59 PM.png]]
 
 
-3. The SAGA orchestrator sends a `Verify Consumer` command to _Consumer Service_.
-4. _Consumer Service_ replies with a `Consumer Verified` message.
-5. The SAGA orchestrator sends a `Create Ticket` command to _Kitchen Service._
-6. _Kitchen Service_ replies with a `Ticket Created` message.
-7. The SAGA orchestrator sends an `Authorize Card` message to _Accounting Service._
-8. _Accounting Service_ replies with a `Card Authorized` message.
-9. The SAGA orchestrator sends an `Approve Ticket` command to _Kitchen Service._
-10. The saga orchestrator sends an `Approve Order` command to _Order Service._
+**Scenario:** User books a flight ticket.
+**Services Involved:**
+- **Booking Orchestrator Service:** The central brain.
+- **Payment Service:** Handles charging the user.
+- **Flight Reservation Service:** Reserves a seat on the flight.
+- **Notification Service:** Sends confirmation emails/SMS.
 
+- **User initiates booking.**
+- **Booking Orchestrator Service (BOS):**
+    - Tells _Payment Service_ to charge user.
+    - **Payment Service** succeeds, replies to BOS.
+    - BOS then tells **Flight Reservation Service** to reserve seat.
+    - **Flight Reservation Service** succeeds, replies to BOS.
+    - BOS then tells **Notification Service** to send confirmation.
+    - **Notification Service** succeeds, replies to BOS.
+    - BOS marks booking `COMPLETED`.
+
+- **User initiates booking.**
+- **Booking Orchestrator Service (BOS):**
+    - Tells **Payment Service** to charge user.
+    - **Payment Service fails**, replies to BOS.
+    - BOS receives failure, triggers **compensating transactions**:
+        - (If any prior steps succeeded, like a preliminary reservation, BOS would tell that service to undo it).
+        - BOS marks booking `FAILED`.
+
+Advantage
 _Simpler dependencies_
 _Less coupling_
 
