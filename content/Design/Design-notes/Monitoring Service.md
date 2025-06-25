@@ -24,6 +24,10 @@ Advantage : `Resilience4J libraries require you to embed them in your applicatio
 Other alternative:
 Linkerd, consul.
 
+_**datadog**_
+Collect matrixes from different agents.
+for aws it directly integrates with cloud watch apis and get aws resources matrix from there.
+
 
 
 

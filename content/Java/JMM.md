@@ -17,7 +17,8 @@ The JMM allows compilers and processors to reorder instructions for optimization
 
 
 
-`CAS
+##### CAS
+
 Compare-and-Swap (CAS) is a lock-free, atomic instruction used in concurrent programming to achieve synchronization without explicit locking. It works by comparing the current value of a variable to an expected value and, only if they match, swapping it with a new value. This operation is performed atomically by the hardware, ensuring that no other thread can interfere between the comparison and the update.
 
 - Threads assume that conflicts will be rare and proceed without locking. If a conflict occurs (CAS fails), the thread retries the operation.
@@ -34,6 +35,10 @@ Compare-and-Swap (CAS) is a lock-free, atomic instruction used in concurrent pro
 
 With multiple threads concurrently calling `increment()`, CAS ensures that each increment operation is atomic, and no updates are lost. This allows us to safely update the counter without using explicit locks.
 
+##### False Sharing
+`Analogy` Imagine two people (cores) working on separate tasks (modifying `counter1` and `counter2`). They each have their own desk (cache). But, because the tools for _both_ tasks are stored on the _same shared clipboard_ (cache line), every time one person uses a tool, the other person has to put the clipboard back in the main toolbox, wait for the first person to put it back, and then get the clipboard _again_ from the main toolbox, even if they only needed their own tool. This constant back-and-forth for a shared resource (the clipboard/cache line) is the performance overhead.
+
+In modern multicore processors, data is transferred between the main memory and the CPU cores in fixed-size blocks called **cache lines** (typically 64 bytes). When two or more independent variables that are frequently accessed by _different_ CPU cores happen to reside within the _same cache line_, it can lead to a performance degradation known as **false sharing**
 
 `False sharing` in multicore multithreading system can be avoided by using padding
 ```JAVA
@@ -49,5 +54,7 @@ This can cause counter1 and counter2 to be stored in same cache line and cause f
       public volatile long q1, q2, q3, q4, q5, q6, q7;
 padding can avoid false sharing
 ```
+
+
 
 

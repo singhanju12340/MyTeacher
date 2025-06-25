@@ -452,3 +452,40 @@ public class AutoSuggestionInterimDocument {
 ### Fetch Autosuggestion
 
 ![[Screenshot 2025-04-09 at 12.44.44 PM.png]]
+
+
+
+
+requirements:
+product:  empower search by providing susgestion for search params.
+1. Make
+2. Model
+3. Year
+4. Dealer
+5. Pricing
+6. ExtColor
+give topk result.
+
+read system design of autosuggestion.
+
+why separate ES index for auto suggestion?
+
+suppose auto suggestion calls on 8 chars. the load on current ES will be 8x.
+search should be more relaible than auto suggestion search.
+need realtime for autosuggestion. so keeping less metadata.
+if autosuggestion index slows our search will not slow down as both are independent.
+
+
+
+**II. How to Make Your System More Scalable**
+
+**Optimize the Data Sync Pipeline:**
+	Incremental Updates (Delta Syncing):
+	Parallelize and Distribute the Sync Workload:
+	Efficient Transformation Logic:
+	Decouple with a Staging/Alias Approach for Index Updates:
+**. Scale the Autosuggestion Elasticsearch Index:**
+Optimize Index Mappings and Settings:
+`edge_ngram` for "type-ahead" feel, or `search_as_you_type` datatype).
+
+

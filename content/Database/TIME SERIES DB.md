@@ -59,3 +59,6 @@ time series data is its **immutability**; once recorded, it generally remains u
 
 - **Timestream**: Developed by Amazon Web Services (AWS), Timestream is a fully managed time series database designed for handling large-scale, high-resolution data. It integrates well with other AWS services, offers built-in time series functions, and provides easy data ingestion and querying capabilities.
 
+
+
+

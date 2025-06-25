@@ -122,3 +122,13 @@ Uses:
 1. DynamoDB Streams can be used to keep an Elasticsearch index in sync with a DynamoDB table. This is useful for building search functionality on top of DynamoDB data.
 2. By processing DynamoDB Streams with Kinesis Data Firehose, you can load data into Amazon S3, Redshift, or Elasticsearch for real-time analytics.
 3. You can use DynamoDB Streams to trigger Lambda functions in response to changes in the database. This can be useful for sending notifications, updating caches, or performing other actions in response to data changes.
+
+
+
+
+### Uses to keep session data
+DynamoDb because AWS is in caused in Demand-base.
+Autoscaling was 
+Built in TTL
+Performance for 
+Session data detail: 

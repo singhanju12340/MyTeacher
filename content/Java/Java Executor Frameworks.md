@@ -87,3 +87,25 @@ void handleRequest(Socket socket) {
 }
 ```
 
+
+### Different types of thread pool provided by executor services:
+`newVirtualThreadPerTaskExecutor()
+
+- As the name suggests, this executor **creates a new virtual thread for every task submitted to it.**
+- It does _not_ pool virtual threads in the traditional sense (like reusing a fixed set of threads). Each call to `execute()` or `submit()` will spawn a fresh virtual thread.
+- Since virtual threads are cheap to create and manage, creating one per task is feasible and efficient for many scenarios, especially I/O-bound ones.
+- The underlying work of these virtual threads is still carried out by a pool of platform threads.
+- **High Concurrency:** Can handle a very large number of concurrent tasks, especially if those tasks are I/O-bound, because virtual threads don't tie up OS threads while waiting.
+- **No Queueing (Typically):** Since a new virtual thread is created for each task, tasks don't usually queue up waiting for a thread from a pool to become available (unless the underlying carrier pool for platform threads becomes saturated, which is less common with virtual threads used correctly).
+
+
+`newFixedThreadPool(int count)
+- Creates a thread pool that reuses a fixed number of threads
+- _Good for CPU-bound tasks_ where the number of threads can be tuned to the number of CPU cores to avoid excessive context switching. Also used to limit resource consumption by bounding the number of concurrent tasks.
+
+`newCachedThreadPool()
+
+- Creates a thread pool that creates new threads as needed if existing threads are busy, but will reuse previously constructed threads when they are available. Threads that have been idle for sixty seconds are terminated and removed from the cache.
+
+`newSingleThreadExecutor()
+- Creates an Executor that uses a single worker thread operating off an unbounded queue. Tasks are guaranteed to execute sequentially.

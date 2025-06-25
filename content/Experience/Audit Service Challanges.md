@@ -163,7 +163,7 @@ _The audit system's rich data model and ClickHouse's analytical capabilities ena
 The system supports both real-time monitoring and historical trend analysis, enabling data-driven operational decisions._
 
 
-A scalable audit system designed to capture and process audit activities across multiple services. The system uses Kafka for reliable event streaming and ClickHouse for efficient storage and analytics.
+## A scalable audit system designed to capture and process audit activities across multiple services. The system uses Kafka for reliable event streaming and ClickHouse for efficient storage and analytics.
 
 #### Architecture Components:
 
@@ -288,15 +288,21 @@ Sample Event: for LEAD_REQUEST_RECEIVED
 _***Click House Schema_
 
 ### Key Design Decisions:
-
 - Flat structure chosen over nested for better query performance and simpler maintenance
-    
 - Correlation IDs link activities across different flows
-    
 - Entity state changes captured as before/after values for comprehensive audit trails
 
+`CODEC.`  is compression algorithm
+`UUID` is a 16-byte (128-bit)
+`LowCardinality` is excellent for columns with a limited number of distinct string values (e.g., "Login", "OrderCreated", "InventoryAdjusted"). It stores distinct values in a dictionary and uses integers to reference them, significantly saving space and speeding up queries. 
+**`CODEC(ZSTD(1))`**: Specifies the ZSTD compression algorithm with compression level 1.
+event_date Date MATERIALIZED toDate(timestamp)`
+`timestamp DateTime64(3) CODEC(DoubleDelta)`: millisecond precision (3 decimal places) and A compression codec particularly effective for monotonically increasing numeric values (like timestamps). It stores differences between consecutive values, then differences of those differences, leading to high compression ratios
+`event_date Date MATERIALIZED toDate(timestamp)`: This means the `event_date` column is not explicitly inserted; its value is automatically calculated (`MATERIALIZED`) from the `timestamp` column using the `toDate()` function when data is written.
+`PARTITION BY toYYYYMM(event_date)` :  Organise data into partition like '202401', '202402'. parition on month provides Efficient Data Management and efficient queries.
+_**Ordering Key (Primary Index):**_ `ORDER BY (event_date, parent_flow_correlation_id, target_flow_correlation_id, entity_id, activity_sequence)`
 
-```
+``` Clickhouse query
 
 CREATE TABLE activities
 (
@@ -355,7 +361,14 @@ SETTINGS
     enable_mixed_granularity_parts = 1;
 ```
 
-### Index:
+### Index: (Secondary indexes creation)
+In addition to the primary index defined by `ORDER BY`, ClickHouse allows you to define **secondary data skipping indexes**. These indexes store aggregated information about data blocks, enabling ClickHouse to skip entire blocks of data during queries if they don't contain the requested values. This significantly speeds up queries that filter on these indexed columns, especially when they are not part of the primary `ORDER BY` key.
+
+`TYPE bloom_filter`: A Bloom filter is a probabilistic data structure that can quickly tell you if an element _might_ be in a set, or if it's _definitely not_ in a set.
+
+**`idx_parent_correlation parent_flow_correlation_id`**:
+
+- **Significance:** While `parent_flow_correlation_id(txn id or vin)` is part of the `ORDER BY` key, adding a Bloom filter index on it can still provide benefits, especially for `WHERE` clauses that filter on this column. It allows ClickHouse to quickly determine if a data block _might_ contain a specific `parent_flow_correlation_id` before reading the entire block. This is crucial for quickly isolating events related to a particular business flow
 
 ```-- Indexes for common query patterns
 ALTER TABLE activity_events
@@ -381,29 +394,19 @@ ALTER TABLE activity_events
 ### # Query Patterns and Materialised Views
 
 ClickHouse Materialized Views provide a mechanism to transform and aggregate audit data in real-time as it's being inserted into the main audit_events table. Unlike traditional databases, ClickHouse materialized views are insert-only and maintain their own storage using specific table engines (like SummingMergeTree, and AggregatingMergeTree).
-
 ## Key Benefits:
-
 - Automatic real-time aggregation during data ingestion
-    
-- No additional processing overhead during read operations
-    
+- No additional processing overhead during read operaions
 - Optimized storage for analytical queries using specialized engines
-    
 - Efficient for high-cardinality audit data processing
     
-
 ## Trade-offs:
-
 - Additional storage space as views maintain separate tables
-    
 - Views are updated only during inserts (not updates/deletes)
-    
 - Need careful consideration of aggregation logic as modifications require view recreation
     
 
 Here are several examples of materialized views that can be utilized for frequently encountered audit trail queries.
-
 
 1. **Correlation-based Flow Trails:**  
     `Handles both parent and target correlations, groups by flow type`
@@ -477,11 +480,76 @@ WHERE actor_type = 'USER';
 
 
 
-heigh write
-long trail
 
-
-events
-activities- analytices, 
 
 cassandra is costly than click house managed 
+
+### Infra and Storage requirements:
+
+- **Ingestion Rate:** 10M events/day.
+    - 10,000,000 events / 24 hours / 3600 seconds = ~115 events/second
+    - Peak ingestion could be significantly higher (e.g., during specific hours). You need to estimate your peak RPS (requests per second).
+- **Event Size:** 1-3KB. Let's assume an average of 2KB.
+    - Daily data volume: 10M events * 2KB/event = 20 GB/day raw data.
+**Data Compression:** ClickHouse excels at compression. 5x to 50x compression. 2-4GB compressed data.
+
+**Query Patterns:**
+all entries for given corelation id.
+all updates for given vins.
+ad-hoc queries to find all failed vin while fetch pricing details
+failed vins while sending update to OMS.
+
+2 shards: 2 replics
+4 vCPU, 32 GiB RAM, with 1-1.5 TB provisioned SSD storage
+
+**Replication:**  Multi-Master Asynchronous Replication.
+**Data Ingestion:** You can insert data into any replica of a shard. The data is first written locally and then asynchronously copied to other replicas within the same shard.
+**Fault Tolerance:** If a replica fails, queries can be routed to other healthy replicas in the shard, ensuring high availability. Writes can continue to any available replica.
+
+
+**Elasticity with Managed Services:** Managed ClickHouse services offer features like:
+- **Auto-scaling:** Automatically adjust compute resources based on workload.
+- **Tiered Storage:** Automatically move older, less frequently accessed data to cheaper object storage (like S3), freeing up expensive local SSDs for hot data.
+- **Simplified Operations:** The provider handles infrastructure provisioning, patching, backups, and monitoring, allowing you to focus on your application.
+- **Automated Failover:** Managed services typically include automated failover mechanisms. If a primary replica fails, a healthy replica is promoted to ensure continuous operation.
+- - **Backups and Disaster Recovery:** Managed services provide automated backups and disaster recovery capabilities, allowing you to restore your data in case of catastrophic failures.
+- **Monitoring and Alerting:** Comprehensive monitoring by the managed service helps detect issues early and ensures proactive intervention.
+- **Efficient Data Rolling/Archival:** You can easily drop old partitions (e.g., `ALTER TABLE my_table DROP PARTITION 'YYYYMM'`) or move them to cheaper storage without affecting active data.
+
+
+**Cardinality:** Monthly partitioning has low cardinality (12 partitions per year), which is ideal for ClickHouse. Avoid overly granular partitioning (e.g., by day if you have many events per day, or by a high-cardinality ID) as it can lead to too many small parts and reduce performance.
+
+
+
+## if the load increases by 2X, what will happen and how to handle? 
+_CPU Starvation:
+- Higher event rates mean `more CPU cycles for parsing, compression, and writing data` parts. `More concurrent queries`, or more complex queries, will demand significantly more CPU for aggregation, filtering, and joins. Merges also consume CPU.  `High CPU utilization across all nodes`, slow query response times, increased ingestion latency, backlog of unmerged parts.
+_RAM Exhaustion:_
+Increased buffer usage for incoming data. Out-of-memory errors, queries failing, significant slowdowns due to increased disk I/O as data is swapped to disk or less data is cached.
+_Disk I/O Bottlenecks:_
+More data written to disk, more frequent small parts created. ClickHouse constantly merges small parts into larger ones in the background.
+
+_Network Bandwidth Saturation:_
+Network bottlenecks, slow data transfer, increased latency.
+
+_The Kafka consumers_
+might struggle to process events fast enough, leading to increased consumer lag in Kafka if not properly scaled.
+**Dictionary/View Refresh Issues:** If you use external dictionaries or materialized views, their refresh cycles might struggle to keep up or become resource-intensive.
+Increase the number of consumer instances.
+Optimize your ClickHouse inserts from your consumers. Batch inserts are significantly more efficient than single-row inserts. Increase batch sizes if your application can handle the memory.
+
+
+_Auto scaling functionality:_
+Ensure your managed service has robust auto-scaling capabilities configured.
+**Horizontal Scaling (Preferred for 2x Load):** Add more nodes (shards and/or replicas). This distributes the load and storage.
+Increase Number of Shards
+
+
+- **During the 2x Load (and always):** Set up alerts for:
+    - High CPU utilization (e.g., >80% sustained).
+    - High RAM utilization (e.g., >85%).
+    - High disk I/O wait times or saturated IOPS.
+    - Increasing number of ClickHouse parts.
+    - Increasing Kafka consumer lag.
+    - Slow query performance.
+- This allows you to react quickly if performance degrades despite your provisioning.

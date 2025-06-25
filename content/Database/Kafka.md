@@ -237,3 +237,15 @@ KRaft (Kafka Raft Metadata mode - Recommended for new deployments)
 - Availability Zone Awareness: Kafka will try to distribute replicas of a partition across different racks/AZs. This protects against data loss or unavailability if an entire rack/AZ fails.
 `Disaster Recovery`:
 protection against data center failures, consider cross-cluster replication tools like Kafka MirrorMaker or other third-party solutions to replicate data to a standby Kafka cluster in a different geographical region.
+
+
+
+### Kafka Vrs Message Queue
+
+| Feature            | Kafka              | Queue              |
+| ------------------ | ------------------ | ------------------ |
+| Message Model      | Log Based          | Queue based        |
+| Delivery semantics | At least once      | At most once       |
+| Message Retention  | Time or Size based | Until consumed     |
+| Replay             | Build In           | No Built in replay |
+| Ordering Guarantee | Per Partition      | Per Queue          |

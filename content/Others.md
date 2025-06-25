@@ -237,3 +237,64 @@ standdard project and team colaborations
 
 
 
+## Oracle:
+Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]. The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer. You must write an algorithm that runs in O(n) time and without using the division operation.
+
+
+Write code to emulate the Producer/Consumer Problem.
+
+String a = "Something" a.concat(" New") What will be garbage collected?
+
+System.exit() or finally
+
+ Can static variables be accessed from a non-static method? Explain with an example.
+
+Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1. put(key, value) - Set or insert the value if the key is not already present. When the cache reaches its capacity, it should invalidate the least recently used item before inserting a new item. The cache is initialized with a positive capacity.
+
+Q. Write code to create a deadlock.
+Ans: create 2 reentersnt lock, 2 thread. 2st thread lock1, then lock2. 2nd thread lock 2 then lock 1 and start both thread at the same time and add some delay after applying 1st lock.
+
+String a = "Something"; String b = new String("Something"); How many objects are created?
+Ans: 2
+Q. Write code to read a file
+
+Q. Write code to start 5 threads.
+: done user ExecuteService service = Execturos.newFixedThreadPool(5);
+run loop and service.execute(new Runnable(){@Override run(){sout("dfgjhk)} });
+
+	
+Write code to merge and remove duplicates from two sorted arrays using Collections.
+
+Q. What do you like about Oracle?
+Q. What do you know about Oracle?
+
+Q. Implement two stacks using a single array without using extra space.
+>pop1(), peek1(),push1(), pop2(), peek2(),push2(), full(), top1+1==top2 is overflow, top1=-1 or top2=size is underflow
+
+Q. Implement a linked list with add, display, insert at end, and delete operations.
+done
+
+Q. Singleton Pattern in details
+
+
+Q. Multiple window handles
+
+https://leetcode.com/problems/asteroid-collision/description/
+find the number of unique pairs of numbers that sum up to the target.
+https://medium.com/@mayilb77/design-a-distributed-job-scheduler-for-millions-of-tasks-in-daily-operations-4132dc6d645f
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/
+https://leetcode.com/problems/meeting-rooms-ii/description/ done intellj
+https://leetcode.com/problems/text-justification/description/ 
+https://leetcode.com/problems/knight-probability-in-chessboard/description/ done
+https://leetcode.com/problems/find-all-anagrams-in-a-string/description/ done
+https://leetcode.com/problems/group-anagrams/description/. done
+e-commerce website which will handle heavy traffic on Big Billion Day sale or Black Friday Sale
+
+Q. What is the difference between a POJO and a Bean?
+
+Sql, bash, Middleware and docker
+
+Design Twitter
+
+- Q3. Java Multithreading - writing thread safe classes
+TODO singleton and thread safe class
