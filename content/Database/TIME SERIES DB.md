@@ -1,9 +1,3 @@
----
-Creation Time :
-Modified Time :
-Creation Time: Monday, July 15th 2024
-Modified Time: Sunday, February 23rd 2025
----
 InfluxDB, Prometheus DB, TimeScaleDB, Timestream
 
 
