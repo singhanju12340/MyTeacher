@@ -52,3 +52,8 @@ Options:
 Use distributed frameworks like Apache Spark or Hadoop for large-scale CSV aggregation.
 
 Preprocess files into a unified format or a database for efficient querying.
+
+
+
+
+Parque file, duckdb
